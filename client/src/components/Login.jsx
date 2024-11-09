@@ -42,9 +42,13 @@ const Login = () => {
         </div>
 
         {/* Login Button */}
-        <button className="w-full lg:w-3/4 bg-blue-900 text-white py-3 rounded-md hover:bg-blue-800 mb-4">
-          Login
-        </button>
+        <Link to="/dashboard">
+      <button
+        className="w-full lg:w-3/4 bg-blue-900 text-white py-3 rounded-md hover:bg-blue-800 mb-4"
+      >
+        Login
+      </button>
+    </Link>
 
         {/* Footer Link */}
         <p className="text-gray-600">
