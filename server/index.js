@@ -7,6 +7,7 @@ const cors = require("cors");
 
 const app = express();
 const authRoutes = require("./routes/authRoutes"); //testtest
+const dashboard=require("./routes/dashboard");
 const cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
@@ -20,6 +21,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use("/", authRoutes);
+app.use("/",dashboard);
 
 app.get("/", (req, res) => {
   res.send("Hello from Node API Server Updated");
