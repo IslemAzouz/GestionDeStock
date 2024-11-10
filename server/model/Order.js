@@ -1,34 +1,27 @@
 const mongoose = require('mongoose');
 
-// Define the Order Schema
 const orderSchema = new mongoose.Schema({
-  orderId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-  },
-  totalPrice: {
-    type: Number,
-    required: true,
-  },
-  date: {
+  orderId: { 
+    type: String, 
+    required: true },
+  date: { 
     type: Date,
-    default: Date.now,
-  },
-  status: {
+     required: true },
+  customer: {
+     type: String, 
+     required: true },
+  salesChannel: { 
+    type: String, 
+    required: true },
+  destination: { 
+    type: String, 
+    required: true },
+  items: { 
+    type: Number, 
+    required: true },
+  status: { 
     type: String,
-    enum: ['completed', 'returned', 'purchased', 'pending'],
-    required: true,
-  },
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product', // Reference to Product model
-    required: true,
-  },
+     required: true }
 });
 
 const Order = mongoose.model('Order', orderSchema);

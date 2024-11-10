@@ -1,55 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { Menu, Search, Bell, ChevronDown, Calendar, Filter } from "lucide-react";
 
-const orderData = [
-  {
-    id: '#7676',
-    date: '06/30/2022',
-    customer: 'Ramesh Chaudhary',
-    salesChannel: 'Store name',
-    destination: 'Lalitpur',
-    items: 3,
-    status: 'Completed'
-  },
-  {
-    id: '#7676',
-    date: '06/30/2022',
-    customer: 'Ramesh Chaudhary',
-    salesChannel: 'Store name',
-    destination: 'Lalitpur',
-    items: 3,
-    status: 'Pending'
-  },
-  {
-    id: '#7676',
-    date: '06/30/2022',
-    customer: 'Ramesh Chaudhary',
-    salesChannel: 'Store name',
-    destination: 'Lalitpur',
-    items: 3,
-    status: 'Completed'
-  },
-  {
-    id: '#7676',
-    date: '06/30/2022',
-    customer: 'Ramesh Chaudhary',
-    salesChannel: 'Store name',
-    destination: 'Lalitpur',
-    items: 3,
-    status: 'Completed'
-  },
-  {
-    id: '#7676',
-    date: '06/30/2022',
-    customer: 'Ramesh Chaudhary',
-    salesChannel: 'Store name',
-    destination: 'Lalitpur',
-    items: 3,
-    status: 'Completed'
-  }
-];
-
 const OrdersPage = () => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [newOrder, setNewOrder] = useState({
+    orderId: '',
+    date: '',
+    customer: '',
+    salesChannel: '',
+    destination: '',
+    items: 0,
+    status: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewOrder({ ...newOrder, [name]: value });
+  };
+
+  const handleAddOrder = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:4000/api/add', newOrder);
+      alert('Order added successfully');
+      setIsPopupOpen(false);
+    } catch (error) {
+      console.error('Error adding order:', error);
+      alert('Failed to add order');
+    }
+  };
+
+  const orderData = [
+    {
+      id: '#7676',
+      date: '06/30/2022',
+      customer: 'Ramesh Chaudhary',
+      salesChannel: 'Store name',
+      destination: 'Lalitpur',
+      items: 3,
+      status: 'Completed'
+    },
+    // Add more order data if needed...
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
@@ -96,7 +90,7 @@ const OrdersPage = () => {
             </button>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-gray-200" />
-              <span className="text-sm">user</span>
+              <span className="text-sm">Ann Lee</span>
               <ChevronDown className="w-4 h-4 text-gray-500" />
             </div>
           </div>
@@ -108,54 +102,16 @@ const OrdersPage = () => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold">Orders</h1>
             <div className="flex gap-3">
-              <button className="px-4 py-2 border rounded-lg text-purple-600 border-purple-600 hover:bg-purple-50">
-                Export to excel
-              </button>
-              <button className="px-4 py-2 border rounded-lg text-purple-600 border-purple-600 hover:bg-purple-50">
-                Import Orders
-              </button>
-              <button className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">
-                + New Orders
+              <button
+                className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700"
+                onClick={() => setIsPopupOpen(true)}
+              >
+                + New Order
               </button>
             </div>
           </div>
 
-          {/* Search and Filters */}
-          <div className="mb-6">
-            <div className="flex gap-4 items-center">
-              <div className="flex-1 relative">
-                <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search order ID"
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
-                />
-              </div>
-              <button className="p-2 border rounded-lg hover:bg-gray-50">
-                <Calendar className="w-5 h-5 text-gray-600" />
-              </button>
-              <div className="relative">
-                <button className="px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-gray-50">
-                  Sales
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="relative">
-                <button className="px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-gray-50">
-                  Status
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="relative">
-                <button className="px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-gray-50">
-                  Filter
-                  <Filter className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* FORM */}
+          {/* Orders Table */}
           <div className="bg-white rounded-lg border">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -217,6 +173,111 @@ const OrdersPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Add Order Popup */}
+        {isPopupOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg w-96">
+              <h2 className="text-2xl font-semibold mb-4">Add New Order</h2>
+              <form onSubmit={handleAddOrder}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">Order ID</label>
+                  <input
+                    type="text"
+                    name="orderId"
+                    value={newOrder.orderId}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">Date</label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={newOrder.date}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">Customer</label>
+                  <input
+                    type="text"
+                    name="customer"
+                    value={newOrder.customer}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">Sales Channel</label>
+                  <input
+                    type="text"
+                    name="salesChannel"
+                    value={newOrder.salesChannel}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">Destination</label>
+                  <input
+                    type="text"
+                    name="destination"
+                    value={newOrder.destination}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">Items</label>
+                  <input
+                    type="number"
+                    name="items"
+                    value={newOrder.items}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">Status</label>
+                  <select
+                    name="status"
+                    value={newOrder.status}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
+                    required
+                  >
+                    <option value="Completed">Completed</option>
+                    <option value="Pending">Pending</option>
+                  </select>
+                </div>
+                <div className="flex justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setIsPopupOpen(false)}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                  >
+                    Add Order
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

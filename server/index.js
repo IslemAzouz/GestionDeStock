@@ -6,9 +6,11 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-const authRoutes = require("./routes/authRoutes"); //testtest
+const authRoutes = require("./routes/authRoutes"); 
 const dashboard=require("./routes/dashboard");
+const order = require ("./routes/orderRoutes");
 const cookieParser = require("cookie-parser");
+
 
 app.use(cookieParser());
 app.use(
@@ -22,6 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use("/", authRoutes);
 app.use("/",dashboard);
+app.use("/api", order);
 
 app.get("/", (req, res) => {
   res.send("Hello from Node API Server Updated");
