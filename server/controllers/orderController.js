@@ -1,6 +1,6 @@
-const Order = require("../model/Order");
 
-// Get all orders
+const Order = require('../model/Order');
+
 const getOrders = function (req, res) {
   Order.find({})
     .then((orders) => {
@@ -11,7 +11,6 @@ const getOrders = function (req, res) {
     });
 };
 
-// Get order by ID
 const getOrder = async (req, res) => {
   try {
     const { id } = req.params;
@@ -25,16 +24,16 @@ const getOrder = async (req, res) => {
   }
 };
 
-// Create a new order
 const addOrder = function (req, res) {
-  const { orderId, date, customer, salesChannel, destination, items, status } = req.body;
+  console.log(req.body); // Log the incoming request body for debugging
 
-  if (!orderId || !date || !customer || !salesChannel || !destination || !items || !status) {
+  const { date, customer, salesChannel, destination, items, status } = req.body;
+
+  if (!date || !customer || !salesChannel || !destination || !items || !status) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   Order.insertMany({
-    orderId,
     date,
     customer,
     salesChannel,
@@ -46,16 +45,16 @@ const addOrder = function (req, res) {
       res.status(200).send(result);
     })
     .catch((err) => {
-      res.status(500).send(err);
+      console.error('Error inserting order:', err);
+      res.status(500).send({ message: 'Failed to add order', error: err.message });
     });
 };
 
-// Update an order
+
 const updateOrder = function (req, res) {
   Order.findByIdAndUpdate(
     req.params.id,
     {
-      orderId: req.body.orderId,
       date: req.body.date,
       customer: req.body.customer,
       salesChannel: req.body.salesChannel,
@@ -63,27 +62,26 @@ const updateOrder = function (req, res) {
       items: req.body.items,
       status: req.body.status,
     },
-    { new: true }  // This option returns the updated order
+    { new: true }
   )
     .then((result) => {
       if (!result) {
         return res.status(404).json({ message: 'Order not found' });
       }
-      res.status(200).send(result); // result is an object
+      res.status(200).send(result);
     })
     .catch((err) => {
       res.status(500).send(err);
     });
 };
 
-// Delete an order
 const deleteOrder = function (req, res) {
   Order.findByIdAndDelete(req.params.id)
     .then((result) => {
       if (!result) {
         return res.status(404).json({ message: 'Order not found' });
       }
-      res.status(200).send(result); // result is the deleted object
+      res.status(200).send(result);
     })
     .catch((err) => {
       res.status(500).send(err);
