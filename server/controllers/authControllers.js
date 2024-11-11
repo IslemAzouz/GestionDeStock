@@ -34,11 +34,11 @@ const handleErrors = (err) => {
   return errors;
 };
 
-module.exports.register = async (req, res, next) => {
+module.exports.register = async (req, res) => {
   try {
     const { firstName, lastName, email, phone, password, agreeTerms } = req.body;
     
-    // Create user with the new fields
+
     const user = await User.create({ firstName, lastName, email, phone, password, agreeTerms });
     
     // Create JWT token

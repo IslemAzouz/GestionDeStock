@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Menu, Search, Bell, ChevronDown, Calendar, Filter } from "lucide-react";
+import { Menu, Search, Bell, ChevronDown } from "lucide-react";
 
 const OrdersPage = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newOrder, setNewOrder] = useState({
-    orderId: '',
     date: '',
     customer: '',
     salesChannel: '',
@@ -14,6 +13,25 @@ const OrdersPage = () => {
     status: ''
   });
 
+  const [orderData, setOrderData] = useState([]); 
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/order/'); 
+        setOrderData(response.data); 
+        setLoading(false); 
+      } catch (err) {
+        setError('Failed to fetch orders'); 
+        setLoading(false); 
+      }
+    };
+
+    fetchOrders();
+  }, []); 
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewOrder({ ...newOrder, [name]: value });
@@ -21,32 +39,24 @@ const OrdersPage = () => {
 
   const handleAddOrder = async (e) => {
     e.preventDefault();
+    console.log(newOrder);
+    if (!newOrder.date || !newOrder.customer || !newOrder.salesChannel || !newOrder.destination || newOrder.items <= 0 || !newOrder.status) {
+      alert('Please fill in all fields correctly');
+      return;
+    }
     try {
-      await axios.post('http://localhost:4000/api/add', newOrder);
+      await axios.post('http://localhost:4000/order/add', newOrder);
       alert('Order added successfully');
       setIsPopupOpen(false);
+      window.location.reload()
     } catch (error) {
-      console.error('Error adding order:', error);
+      console.error('Error adding order:', error.response?.data || error.message);
       alert('Failed to add order');
     }
   };
 
-  const orderData = [
-    {
-      id: '#7676',
-      date: '06/30/2022',
-      customer: 'Ramesh Chaudhary',
-      salesChannel: 'Store name',
-      destination: 'Lalitpur',
-      items: 3,
-      status: 'Completed'
-    },
-    // Add more order data if needed...
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
       <div className="w-20 bg-purple-600 text-white">
         <div className="p-4">
           <Menu className="w-6 h-6" />
@@ -71,9 +81,7 @@ const OrdersPage = () => {
         </nav>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1">
-        {/* Header */}
         <header className="bg-white p-4 flex justify-between items-center border-b">
           <div className="flex items-center gap-4">
             <button className="lg:hidden">
@@ -90,15 +98,13 @@ const OrdersPage = () => {
             </button>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-gray-200" />
-              <span className="text-sm">Ann Lee</span>
+              <span className="text-sm">user</span>
               <ChevronDown className="w-4 h-4 text-gray-500" />
             </div>
           </div>
         </header>
 
-        {/* Orders Content */}
         <div className="p-6">
-          {/* Page Header */}
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold">Orders</h1>
             <div className="flex gap-3">
@@ -111,7 +117,6 @@ const OrdersPage = () => {
             </div>
           </div>
 
-          {/* Orders Table */}
           <div className="bg-white rounded-lg border">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -119,9 +124,6 @@ const OrdersPage = () => {
                   <tr>
                     <th className="w-8 p-4">
                       <input type="checkbox" className="rounded" />
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">
-                      Order ID
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">
                       Date
@@ -144,53 +146,46 @@ const OrdersPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {orderData.map((order, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="w-8 p-4">
-                        <input type="checkbox" className="rounded" />
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{order.id}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{order.date}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{order.customer}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{order.salesChannel}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{order.destination}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{order.items}</td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex px-3 py-1 rounded-full text-sm ${
-                            order.status === 'Completed'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}
-                        >
-                          {order.status}
-                        </span>
-                      </td>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="8" className="text-center py-4">Loading...</td>
                     </tr>
-                  ))}
+                  ) : error ? (
+                    <tr>
+                      <td colSpan="8" className="text-center py-4 text-red-500">{error}</td>
+                    </tr>
+                  ) : (
+                    orderData.map((order, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="w-8 p-4">
+                          <input type="checkbox" className="rounded" />
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{order.date}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{order.customer}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{order.salesChannel}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{order.destination}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{order.items}</td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex px-3 py-1 rounded-full text-sm ${order.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
+                          >
+                            {order.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
 
-        {/* Add Order Popup */}
         {isPopupOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
             <div className="bg-white p-6 rounded-lg w-96">
               <h2 className="text-2xl font-semibold mb-4">Add New Order</h2>
               <form onSubmit={handleAddOrder}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Order ID</label>
-                  <input
-                    type="text"
-                    name="orderId"
-                    value={newOrder.orderId}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
-                    required
-                  />
-                </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">Date</label>
                   <input
@@ -198,8 +193,7 @@ const OrdersPage = () => {
                     name="date"
                     value={newOrder.date}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
-                    required
+                    className="w-full px-4 py-2 border rounded-md"
                   />
                 </div>
                 <div className="mb-4">
@@ -209,8 +203,7 @@ const OrdersPage = () => {
                     name="customer"
                     value={newOrder.customer}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
-                    required
+                    className="w-full px-4 py-2 border rounded-md"
                   />
                 </div>
                 <div className="mb-4">
@@ -220,8 +213,7 @@ const OrdersPage = () => {
                     name="salesChannel"
                     value={newOrder.salesChannel}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
-                    required
+                    className="w-full px-4 py-2 border rounded-md"
                   />
                 </div>
                 <div className="mb-4">
@@ -231,8 +223,7 @@ const OrdersPage = () => {
                     name="destination"
                     value={newOrder.destination}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
-                    required
+                    className="w-full px-4 py-2 border rounded-md"
                   />
                 </div>
                 <div className="mb-4">
@@ -242,8 +233,7 @@ const OrdersPage = () => {
                     name="items"
                     value={newOrder.items}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
-                    required
+                    className="w-full px-4 py-2 border rounded-md"
                   />
                 </div>
                 <div className="mb-4">
@@ -252,26 +242,26 @@ const OrdersPage = () => {
                     name="status"
                     value={newOrder.status}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
-                    required
+                    className="w-full px-4 py-2 border rounded-md"
                   >
                     <option value="Completed">Completed</option>
                     <option value="Pending">Pending</option>
+                    <option value="Shipped">Shipped</option>
                   </select>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-end gap-4">
                   <button
                     type="button"
                     onClick={() => setIsPopupOpen(false)}
-                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg"
+                    className="px-4 py-2 rounded-md text-gray-500 bg-gray-200"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                    className="px-4 py-2 rounded-md bg-blue-600 text-white"
                   >
-                    Add Order
+                    Save
                   </button>
                 </div>
               </form>
