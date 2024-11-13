@@ -35,14 +35,6 @@ mongoose
   .then(async () => {
     console.log("Connected to database!");
 
-    // Drop the orderId_1 index from the Order collection
-    try {
-      await mongoose.connection.db.collection('orders').dropIndex('orderId_1');
-      console.log("Index 'orderId_1' dropped successfully.");
-    } catch (err) {
-      console.error("Error dropping index:", err);
-    }
-
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);
     });
