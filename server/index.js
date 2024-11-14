@@ -14,7 +14,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: ["http://localhost:3000"],
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", 'PUT', 'DELETE'],
     credentials: true,
   })
 );
@@ -25,10 +25,6 @@ app.use("/auth", authRoutes);
 app.use("/", dashboard);
 app.use("/order", order);
 
-// Test route
-app.get('/test', (req, res) => {
-  res.send('Server is working correctly!');
-});
 
 mongoose
   .connect(process.env.MONGODB_URI)
