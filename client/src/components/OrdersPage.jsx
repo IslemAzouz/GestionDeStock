@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Search, Bell, ChevronDown, Calendar, Filter } from "lucide-react";
+import { Menu, Search, Bell, ChevronDown, Calendar, Filter , Trash2 , Pencil  } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -29,7 +29,7 @@ const OrdersPage = () => {
       try {
         const response = await axios.get('http://localhost:4000/order/');
         setOrderData(response.data);
-        setFilteredData(response.data); // Initially, all orders are shown
+        setFilteredData(response.data); 
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch orders');
@@ -80,6 +80,20 @@ const OrdersPage = () => {
     } catch (error) {
       console.error('Error adding order:', error.response?.data || error.message);
       toast.error('Failed to add order');
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      // Adjust the property name here if necessary (e.g., use `_id` instead of `id`)
+      await axios.delete(`http://localhost:4000/order/delete/${orderId}`);
+      toast.success('Order deleted successfully');
+      // Adjust the property name here as well if necessary
+      setOrderData(orderData.filter(order => order._id !== orderId)); // Remove from local state
+      setFilteredData(filteredData.filter(order => order._id !== orderId)); // Update filtered data
+    } catch (error) {
+      console.error('Error deleting order:', error.response?.data || error.message);
+      toast.error('Failed to delete order');
     }
   };
 
@@ -205,6 +219,7 @@ const OrdersPage = () => {
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Destination</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Items</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Status</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -240,6 +255,14 @@ const OrdersPage = () => {
                           {order.status}
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                          <button onClick={() => handleDeleteOrder(order._id)}>
+                            <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700" />
+                          </button>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                          <button > {/* onClick={() => handleDeleteOrder(order._id)}*/}
+                            <Pencil  className="w-5 h-5 text-gray-500 hover:text-black-700" />
+                          </button>
+                        </td>
                     </tr>
                   ))
                 )}
