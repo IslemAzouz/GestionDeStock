@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Search, Bell, ChevronDown, Calendar, Filter , Trash2 , Pencil  } from "lucide-react";
+import { Menu, Search, Bell, ChevronDown, Calendar, Trash2, Pencil } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -16,13 +16,14 @@ const OrdersPage = () => {
     items: 0,
     status: ''
   });
-
+  
   const [orderData, setOrderData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
+  const [editOrder, setEditOrder] = useState(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -83,12 +84,28 @@ const OrdersPage = () => {
     }
   };
 
+  const handleUpdateOrder = async (e) => {
+    e.preventDefault();
+    if (!newOrder.date || !newOrder.customer || !newOrder.salesChannel || !newOrder.destination || newOrder.items <= 0 || !newOrder.status) {
+      toast.error('Please fill in all fields correctly');
+      return;
+    }
+
+    try {
+      await axios.put(`http://localhost:4000/order/update/${editOrder}`, newOrder);
+      toast.success('Order updated successfully');
+      setIsPopupOpen(false);
+      window.location.reload(); // Reload to see updated order
+    } catch (error) {
+      console.error('Error updating order:', error.response?.data || error.message);
+      toast.error('Failed to update order');
+    }
+  };
+
   const handleDeleteOrder = async (orderId) => {
     try {
-      // Adjust the property name here if necessary (e.g., use `_id` instead of `id`)
       await axios.delete(`http://localhost:4000/order/delete/${orderId}`);
       toast.success('Order deleted successfully');
-      // Adjust the property name here as well if necessary
       setOrderData(orderData.filter(order => order._id !== orderId)); // Remove from local state
       setFilteredData(filteredData.filter(order => order._id !== orderId)); // Update filtered data
     } catch (error) {
@@ -101,7 +118,7 @@ const OrdersPage = () => {
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
       <div className="w-20 bg-purple-600 text-white">
-        <div className="p-4">
+      <div className="p-4">
           <Menu className="w-6 h-6" />
         </div>
         <nav className="flex flex-col gap-4 p-2">
@@ -166,7 +183,18 @@ const OrdersPage = () => {
               </button>
               <button
                 className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700"
-                onClick={() => setIsPopupOpen(true)}
+                onClick={() => {
+                  setNewOrder({
+                    date: '',
+                    customer: '',
+                    salesChannel: '',
+                    destination: '',
+                    items: 0,
+                    status: ''
+                  });
+                  setEditOrder(null);
+                  setIsPopupOpen(true);
+                }}
               >
                 + New Order
               </button>
@@ -195,10 +223,10 @@ const OrdersPage = () => {
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
                 >
-                  <option value="All">All Status</option>
+                                    <option value="All">All Status</option>
                   <option value="Completed">Completed</option>
                   <option value="Pending">Pending</option>
-                  <option value="Shipped">Shipped</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
             </div>
@@ -215,7 +243,7 @@ const OrdersPage = () => {
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Date</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Customer</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Sales channel</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Sales Channel</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Destination</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Items</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Status</th>
@@ -233,154 +261,160 @@ const OrdersPage = () => {
                     </tr>
                   ) : (
                     filteredData.map((order, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                      <td className="w-8 p-4">
-                        <input type="checkbox" className="rounded" />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.salesChannel}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.destination}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.items}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            order.status === 'Completed'
-                              ? 'bg-green-100 text-green-600'
-                              : order.status === 'Pending'
-                              ? 'bg-yellow-100 text-yellow-600'
-                              : 'bg-blue-100 text-blue-600'
-                          }`}
-                        >
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                          <button onClick={() => handleDeleteOrder(order._id)}>
+                      <tr key={order._id} className="hover:bg-gray-50">
+                        <td className="w-8 p-4">
+                          <input type="checkbox" className="rounded" />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.date}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.salesChannel}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.destination}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.items}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              order.status === 'Completed'
+                                ? 'bg-green-100 text-green-600'
+                                : order.status === 'Pending'
+                                ? 'bg-yellow-100 text-yellow-600'
+                                : 'bg-red-100 text-red-600'
+                            }`}
+                          >
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                          <button onClick={() => {
+                            setNewOrder(order);
+                            setEditOrder(order._id);
+                            setIsPopupOpen(true);
+                          }}>
+                            <Pencil className="w-5 h-5 text-gray-500 hover:text-black-700" />
+                          </button>
+                          <button onClick={() => handleDeleteOrder(order._id)} className="ml-4">
                             <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700" />
-                          </button>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                          <button > {/* onClick={() => handleDeleteOrder(order._id)}*/}
-                            <Pencil  className="w-5 h-5 text-gray-500 hover:text-black-700" />
                           </button>
                         </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <ToastContainer 
-     position="bottom-right" 
-    autoClose={10000} 
-    hideProgressBar={false} 
-    newestOnTop={false} 
-    closeOnClick 
-    rtl={false} 
-    pauseOnFocusLoss 
-    draggable 
-    pauseOnHover 
-/>
+      <ToastContainer 
+        position="bottom-right" 
+        autoClose={10000} 
+        hideProgressBar={false} 
+        newestOnTop={false} 
+        closeOnClick 
+        rtl={false} 
+        pauseOnFocusLoss 
+        draggable 
+        pauseOnHover 
+      />
 
-    {/* Add Order Popup */}
-    {isPopupOpen && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      {/* Popup for Add/Edit Order */}
+      {isPopupOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-6 rounded-lg w-96">
-          <h2 className="text-lg font-semibold mb-4">Add New Order</h2>
-          <form onSubmit={handleAddOrder}>
-            <div className="mb-3">
-              <label className="block text-sm text-gray-600">Date</label>
-              <input
-                type="date"
-                name="date"
-                value={newOrder.date}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="block text-sm text-gray-600">Customer</label>
-              <input
-                type="text"
-                name="customer"
-                value={newOrder.customer}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="block text-sm text-gray-600">Sales Channel</label>
-              <input
-                type="text"
-                name="salesChannel"
-                value={newOrder.salesChannel}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="block text-sm text-gray-600">Destination</label>
-              <input
-                type="text"
-                name="destination"
-                value={newOrder.destination}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="block text-sm text-gray-600">Items</label>
-              <input
-                type="number"
-                name="items"
-                value={newOrder.items}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                min="1"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm text-gray-600">Status</label>
-              <select
-                name="status"
-                value={newOrder.status}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              >
-                <option value="">Select Status</option>
-                <option value="Completed">Completed</option>
-                <option value="Pending">Pending</option>
-                <option value="Shipped">Shipped</option>
-              </select>
-            </div>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                className="px-4 py-2 border rounded-lg text-gray-600"
-                onClick={() => setIsPopupOpen(false)}
-              >
-                Cancel
-              </button>
-              <button type="submit" className="px-4 py-2 bg-purple-600 text-white rounded-lg">
-                Save
-              </button>
-            </div>
-          </form>
+            <h2 className="text-xl mb-4">{editOrder ? 'Edit Order' : 'Add Order'}</h2>
+            <form onSubmit={editOrder ? handleUpdateOrder : handleAddOrder}>
+              <div className="mb-4">
+                <label className="block mb-1">Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={newOrder.date}
+                  onChange={handleInputChange}
+                  className="border rounded p-2 w-full"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1">Customer</label>
+                <input
+                  type="text"
+                  name="customer"
+                  value={newOrder.customer}
+                  onChange={handleInputChange}
+                  className="border rounded p-2 w-full"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1">Sales Channel</label>
+                <input
+                  type="text"
+                  name="salesChannel"
+                  value={newOrder.salesChannel}
+                  onChange={handleInputChange}
+                  className="border rounded p-2 w-full"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1">Destination</label>
+                <input
+                  type="text"
+                  name="destination"
+                  value={newOrder.destination}
+                  onChange={handleInputChange}
+                  className="border rounded p-2 w-full"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1">Items</label>
+                <input
+                  type="number"
+                  name="items"
+                  value={newOrder.items}
+                  onChange={handleInputChange}
+                  className="border rounded p-2 w-full"
+                  required
+                  min="1"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1">Status</label>
+                <select
+                  name="status"
+                  value={newOrder.status}
+                  onChange={handleInputChange}
+                  className="border rounded p-2 w-full"
+                  required
+                >
+                  <option value="">Select Status</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
+                  onClick={() => setIsPopupOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
+                  {editOrder ? 'Update Order' : 'Add Order'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
 };
 
 export default OrdersPage;
-
