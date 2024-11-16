@@ -1,5 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
+MONGODB_URI=mongodb+srv://shaymabahi:Oha1SQnqs76Pj5Si@stock.jhwol.mongodb.net/Stock?retryWrites=true&w=majority&appName=Stock
+PORT=4000
 # dependencies
 /node_modules
 /.pnp
