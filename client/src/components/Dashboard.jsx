@@ -48,15 +48,21 @@ const Dashboard = () => {
             <Menu className="w-6 h-6" />
           </div>
           <nav className="flex flex-col gap-4 p-2">
-            {['Dashboard', 'In Stock', 'Products', 'Sales', 'Orders', 'Users'].map((item) => (
-              <Link key={item} to={item === 'Orders' ? '/orders' : '#'}> {/* Link to Orders page */}
-                <button className="p-2 rounded hover:bg-[#2a2f47] flex flex-col items-center text-xs">
-                  <div className="w-6 h-6 mb-1 bg-gray-600 rounded" />
-                  {item}
-                </button>
-              </Link>
-            ))}
-          </nav>
+  {['Dashboard', 'In Stock', 'Sales', 'Orders', 'Users'].map((item) => {
+    let path = '#'; // Default path
+    if (item === 'In Stock') path = '/Stock';
+    if (item === 'Orders') path = '/orders';
+
+    return (
+      <Link key={item} to={path}>
+        <button className="p-2 rounded hover:bg-[#2a2f47] flex flex-col items-center text-xs">
+          <div className="w-6 h-6 mb-1 bg-gray-600 rounded" />
+          {item}
+        </button>
+      </Link>
+    );
+  })}
+</nav>
         </div>
 
         {/* Main Content */}

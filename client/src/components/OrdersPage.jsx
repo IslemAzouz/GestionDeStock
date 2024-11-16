@@ -124,10 +124,9 @@ const OrdersPage = () => {
         <nav className="flex flex-col gap-4 p-2">
           {[
             { name: 'Dashboard', icon: 'grid', to: '/dashboard' },
-            { name: 'In Stock', icon: 'box' },
-            { name: 'Products', icon: 'package' },
+            { name: 'In Stock', icon: 'box', to: '/Stock' },
             { name: 'Sales', icon: 'trending-up' },
-            { name: 'Orders', icon: 'shopping-cart' },
+            { name: 'Orders', icon: 'shopping-cart' , to:'/orders' },
             { name: 'Users', icon: 'users' }
           ].map((item) => (
             <button
@@ -135,6 +134,12 @@ const OrdersPage = () => {
               className="p-2 rounded hover:bg-purple-700 flex flex-col items-center text-xs"
               onClick={() => {
                 if (item.name === 'Dashboard') {
+                  navigate(item.to);
+                }
+                if (item.name === 'Orders') {
+                  navigate(item.to);
+                }
+                if (item.name === 'In Stock') {
                   navigate(item.to);
                 }
               }}
