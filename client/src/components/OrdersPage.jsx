@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Menu, Search, Bell, ChevronDown, Calendar, Trash2, Pencil } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const OrdersPage = () => {
   const navigate = useNavigate();
@@ -95,7 +97,7 @@ const OrdersPage = () => {
       await axios.put(`http://localhost:4000/order/update/${editOrder}`, newOrder);
       toast.success('Order updated successfully');
       setIsPopupOpen(false);
-      window.location.reload(); // Reload to see updated order
+      window.location.reload(); 
     } catch (error) {
       console.error('Error updating order:', error.response?.data || error.message);
       toast.error('Failed to update order');
@@ -106,11 +108,58 @@ const OrdersPage = () => {
     try {
       await axios.delete(`http://localhost:4000/order/delete/${orderId}`);
       toast.success('Order deleted successfully');
-      setOrderData(orderData.filter(order => order._id !== orderId)); // Remove from local state
-      setFilteredData(filteredData.filter(order => order._id !== orderId)); // Update filtered data
+      setOrderData(orderData.filter(order => order._id !== orderId)); 
+      setFilteredData(filteredData.filter(order => order._id !== orderId)); 
     } catch (error) {
       console.error('Error deleting order:', error.response?.data || error.message);
       toast.error('Failed to delete order');
+    }
+  };
+  const handleExportToExcel = () => {
+    try {
+      const exportData = filteredData.map(order => ({
+        Date: order.date,
+        Customer: order.customer,
+        'Sales Channel': order.salesChannel,
+        Destination: order.destination,
+        Items: order.items,
+        Status: order.status
+      }));
+
+      
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+      const columnWidths = [
+        { wch: 15 }, 
+        { wch: 20 }, 
+        { wch: 15 }, 
+        { wch: 25 }, 
+        { wch: 10 }, 
+        { wch: 12 }  
+      ];
+      worksheet['!cols'] = columnWidths;
+
+      
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Orders');
+
+      
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+      
+      const data = new Blob([excelBuffer], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+      
+      
+      const fileName = `orders_${new Date().toISOString().split('T')[0]}.xlsx`;
+      
+      saveAs(data, fileName);
+      
+      toast.success('Orders exported successfully');
+    } catch (error) {
+      console.error('Error exporting orders:', error);
+      toast.error('Failed to export orders');
     }
   };
 
@@ -180,7 +229,9 @@ const OrdersPage = () => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold">Orders</h1>
             <div className="flex gap-3">
-              <button className="px-4 py-2 border rounded-lg text-purple-600 border-purple-600 hover:bg-purple-50">
+              <button 
+              onClick={handleExportToExcel}
+              className="px-4 py-2 border rounded-lg text-purple-600 border-purple-600 hover:bg-purple-50">
                 Export to excel
               </button>
               <button className="px-4 py-2 border rounded-lg text-purple-600 border-purple-600 hover:bg-purple-50">
