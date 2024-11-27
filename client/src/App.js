@@ -6,6 +6,8 @@ import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
 import OrdersPage from "./components/OrdersPage";
 import Stock from "./components/Stock";
+import SalesPage from "./components/SalesPage"; 
+
 function App() {
   return (
     <BrowserRouter>
@@ -15,7 +17,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/orders" element={<OrdersPage />} />
-        <Route path="/Stock" element={<Stock />} />
+        <Route path="/stock" element={<Stock />} /> 
+        <Route path="/sales" element={<SalesPage />} /> 
       </Routes>
     </BrowserRouter>
   );

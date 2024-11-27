@@ -52,6 +52,7 @@ const Dashboard = () => {
     let path = '#'; // Default path
     if (item === 'In Stock') path = '/Stock';
     if (item === 'Orders') path = '/orders';
+    if (item === 'Sales') path = '/sales';
 
     return (
       <Link key={item} to={path}>

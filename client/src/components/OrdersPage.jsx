@@ -174,7 +174,7 @@ const OrdersPage = () => {
           {[
             { name: 'Dashboard', icon: 'grid', to: '/dashboard' },
             { name: 'In Stock', icon: 'box', to: '/Stock' },
-            { name: 'Sales', icon: 'trending-up' },
+            { name: 'Sales', icon: 'trending-up', to:'/sales' },
             { name: 'Orders', icon: 'shopping-cart' , to:'/orders' },
             { name: 'Users', icon: 'users' }
           ].map((item) => (
