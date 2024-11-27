@@ -8,6 +8,8 @@ const app = express();
 const authRoutes = require("./routes/authRoutes"); 
 const dashboard = require("./routes/dashboard");
 const order = require("./routes/orderRoutes");
+const salesRoutes = require('./routes/salesRoutes');
+
 const cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
@@ -24,6 +26,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/auth", authRoutes);
 app.use("/", dashboard);
 app.use("/order", order);
+app.use('/sales', salesRoutes);
 
 
 mongoose
