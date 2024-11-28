@@ -9,6 +9,8 @@ const authRoutes = require("./routes/authRoutes");
 const dashboard = require("./routes/dashboard");
 const order = require("./routes/orderRoutes");
 const salesRoutes = require('./routes/salesRoutes');
+const stock =require("./routes/stockRoutes");
+
 
 const cookieParser = require("cookie-parser");
 
@@ -27,6 +29,8 @@ app.use("/auth", authRoutes);
 app.use("/", dashboard);
 app.use("/order", order);
 app.use('/sales', salesRoutes);
+app.use('/stock',stock );
+
 
 
 mongoose
