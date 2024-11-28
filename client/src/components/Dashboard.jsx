@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import Sidebar from './Sidebar';
+import Header from './Header'; // Import the Header component
 import axios from 'axios';
 
 const chartData = [
@@ -62,23 +63,10 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="flex-1 p-6">
           {/* Header */}
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Dashboard</h1>
-            <div className="flex items-center gap-4">
-              <button className="p-2 rounded-full bg-gray-200">
-                <svg viewBox="0 0 24 24" className="w-6 h-6">
-                  <circle cx="12" cy="12" r="10" className="fill-gray-400" />
-                </svg>
-              </button>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gray-300" />
-                <span>user</span>
-              </div>
-            </div>
-          </div>
+          <Header title="Dashboard" user="user" /> {/* Pass props to Header */}
 
           {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 mt-6">
             <MetricCard title="Total Stock" amount={totalStock} />
             <MetricCard title="Total Sales" amount={totalSales} />
             <MetricCard title="Total Orders" amount={totalOrders} />
