@@ -1,86 +1,77 @@
-const Product = require('../model/Product');
+const stock = require("../model/StockModel");
 
-// Obtenir tous les produits en stock
-const getStock = async (req, res) => {
+const getAllStocks = async (req, res) => {
   try {
-    const products = await Product.find({});
-    res.status(200).json(products);
+    const stocks = await stock.find();
+    res.status(200).send(stocks);
   } catch (error) {
-    console.error('Erreur lors de la récupération des produits en stock:', error);
-    res.status(500).json({ message: 'Erreur lors de la récupération des produits en stock.' });
+    res.status(200).json({ message: "Error fetching stocks" });
   }
 };
 
-// Ajouter un nouveau produit au stock
-const addProductToStock = async (req, res) => {
-  const { name, price, stockQuantity, category, supplier } = req.body;
-
-  if (!name || !price || !stockQuantity || !category || !supplier) {
-    return res.status(400).json({ message: 'Tous les champs sont requis.' });
-  }
-
+const getStockById = async (req, res) => {
   try {
-    const product = new Product({
-      name,
-      price,
-      stockQuantity,
-      category,
-      supplier,
-    });
-
-    const savedProduct = await product.save();
-    res.status(201).json(savedProduct);
+    const stock = await stock.findById(req.params.id);
+    if (!stock) {
+      return res.status(404).json({ message: "Stock not found" });
+    }
+    res.json(stock);
   } catch (error) {
-    console.error('Erreur lors de l\'ajout du produit au stock:', error);
-    res.status(500).json({ message: 'Échec de l\'ajout du produit au stock.' });
+    res.status(500).json({ message: "Error fetching stock by ID" });
   }
 };
 
-// Mettre à jour les informations d'un produit en stock
-const updateStockProduct = async (req, res) => {
-  const { id } = req.params;
-  const { name, price, stockQuantity, category, supplier } = req.body;
+const addStock = async (req, res) => {
+  const { product, category, storeName, quantity } = req.body;
+
+  if (!product || !category || !storeName || !quantity) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
 
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      { name, price, stockQuantity, category, supplier },
+    const newStock = new stock({ product, category, storeName, quantity });
+    await newStock.save();
+    res.status(201).json(newStock);
+  } catch (error) {
+    res.status(500).json({ message: "Error adding stock" });
+  }
+};
+
+const updateStock = async (req, res) => {
+  const { product, category, storeName, quantity } = req.body;
+  try {
+    const updatedStock = await stock.findByIdAndUpdate(
+      req.params.id,
+      { product, category, storeName, quantity },
       { new: true }
     );
 
-    if (!updatedProduct) {
-      return res.status(404).json({ message: 'Produit non trouvé.' });
+    if (!updatedStock) {
+      return res.status(404).json({ message: "Stock not found" });
     }
 
-    res.status(200).json(updatedProduct);
+    res.json(updatedStock);
   } catch (error) {
-    console.error('Erreur lors de la mise à jour du produit en stock:', error);
-    res.status(500).json({ message: 'Échec de la mise à jour du produit en stock.' });
+    res.status(500).json({ message: "Error updating stock" });
   }
 };
 
-// Supprimer un produit du stock
-const deleteStockProduct = async (req, res) => {
-  const { id } = req.params;
-
+const deleteStock = async (req, res) => {
   try {
-    const deletedProduct = await Product.findByIdAndDelete(id);
-
-    if (!deletedProduct) {
-      return res.status(404).json({ message: 'Produit non trouvé.' });
+    const deletedStock = await stock.findByIdAndDelete(req.params.id);
+    if (!deletedStock) {
+      return res.status(404).json({ message: "Stock not found" });
     }
-
-    res.status(200).json(deletedProduct);
+    res.json({ message: "Stock deleted successfully" });
   } catch (error) {
-    console.error('Erreur lors de la suppression du produit du stock:', error);
-    res.status(500).json({ message: 'Échec de la suppression du produit du stock.' });
+    res.status(500).json({ message: "Error deleting stock" });
   }
 };
 
-// Exporter les contrôleurs
 module.exports = {
-  getStock,
-  addProductToStock,
-  updateStockProduct,
-  deleteStockProduct,
+  getAllStocks,
+  getStockById,
+  addStock,
+  updateStock,
+  deleteStock,
 };

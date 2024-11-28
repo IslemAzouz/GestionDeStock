@@ -1,5 +1,5 @@
 const Order = require('../model/Order');
-const Product = require('../model/Product');
+const Product = require('../model/StockModel');
 
 // Controller to get dynamic data for the dashboard
 const getDashboardData = async (req, res) => {
