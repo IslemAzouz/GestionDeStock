@@ -66,9 +66,11 @@ module.exports.login = async (req, res) => {
     const user = await User.login(email, password);
     const token = createToken(user._id);
 
-    // Set the JWT token as a cookie
-    res.cookie("jwt", token, { httpOnly: false, maxAge: maxAge * 1000 });
-    res.status(200).json({ user: user._id, status: true });
+      // Set the JWT token as a cookie
+      res.cookie("jwt", token, { httpOnly: false, maxAge: maxAge * 1000 });
+
+      // Include the token in the response JSON
+      res.status(200).json({ user: user._id, token, status: true });
   } catch (err) {
     const errors = handleErrors(err);
     res.json({ errors, status: false });
