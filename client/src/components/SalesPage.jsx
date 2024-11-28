@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Search, Calendar, Trash2 } from "lucide-react";
+import { Search, Trash2, Plus } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Sidebar from './Sidebar';
@@ -14,6 +14,8 @@ const SalesPage = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [newSale, setNewSale] = useState({ date: '', product: '', quantity: '', price: '' });
 
   useEffect(() => {
     const fetchSales = async () => {
@@ -51,6 +53,20 @@ const SalesPage = () => {
 
     filterSales();
   }, [searchTerm, filterDate, salesData]);
+
+  const handleAddSale = async () => {
+    try {
+      const response = await axios.post('http://localhost:4000/sales/add', newSale);
+      setSalesData([...salesData, response.data]);
+      setFilteredData([...filteredData, response.data]);
+      toast.success('Sale added successfully');
+      setNewSale({ date: '', product: '', quantity: '', price: '' });
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error adding sale:', error.response?.data || error.message);
+      toast.error('Failed to add sale');
+    }
+  };
 
   const handleDeleteSale = async (saleId) => {
     try {
@@ -96,10 +112,10 @@ const SalesPage = () => {
         <div className="flex items-center justify-between p-6 bg-white shadow">
           <h1 className="text-xl font-semibold">Sales</h1>
           <button
-            onClick={handleExportToExcel}
-            className="px-4 py-2 text-purple-600 border border-purple-600 rounded hover:bg-purple-50"
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700 flex items-center"
           >
-            Export to Excel
+            <Plus className="mr-2" /> Add Sale
           </button>
         </div>
 
@@ -165,6 +181,58 @@ const SalesPage = () => {
             </tbody>
           </table>
         </div>
+
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">Add New Sale</h2>
+              <div className="grid gap-4">
+                <input
+                  type="date"
+                  className="px-4 py-2 border rounded"
+                  value={newSale.date}
+                  onChange={(e) => setNewSale({ ...newSale, date: e.target.value })}
+                  placeholder="Date"
+                />
+                <input
+                  type="text"
+                  className="px-4 py-2 border rounded"
+                  value={newSale.product}
+                  onChange={(e) => setNewSale({ ...newSale, product: e.target.value })}
+                  placeholder="Product"
+                />
+                <input
+                  type="number"
+                  className="px-4 py-2 border rounded"
+                  value={newSale.quantity}
+                  onChange={(e) => setNewSale({ ...newSale, quantity: e.target.value })}
+                  placeholder="Quantity"
+                />
+                <input
+                  type="number"
+                  className="px-4 py-2 border rounded"
+                  value={newSale.price}
+                  onChange={(e) => setNewSale({ ...newSale, price: e.target.value })}
+                  placeholder="Price"
+                />
+              </div>
+              <div className="flex justify-end mt-4">
+                <button
+                  className="px-4 py-2 bg-gray-300 rounded mr-2"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 bg-green-600 text-white rounded"
+                  onClick={handleAddSale}
+                >
+                  Add Sale
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
