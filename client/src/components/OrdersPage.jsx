@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import Sidebar from './Sidebar';
 
 const OrdersPage = () => {
   const navigate = useNavigate();
@@ -165,40 +166,8 @@ const OrdersPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className="w-20 bg-purple-600 text-white">
-      <div className="p-4">
-          <Menu className="w-6 h-6" />
-        </div>
-        <nav className="flex flex-col gap-4 p-2">
-          {[
-            { name: 'Dashboard', icon: 'grid', to: '/dashboard' },
-            { name: 'In Stock', icon: 'box', to: '/Stock' },
-            { name: 'Sales', icon: 'trending-up', to:'/sales' },
-            { name: 'Orders', icon: 'shopping-cart' , to:'/orders' },
-            { name: 'Users', icon: 'users' }
-          ].map((item) => (
-            <button
-              key={item.name}
-              className="p-2 rounded hover:bg-purple-700 flex flex-col items-center text-xs"
-              onClick={() => {
-                if (item.name === 'Dashboard') {
-                  navigate(item.to);
-                }
-                if (item.name === 'Orders') {
-                  navigate(item.to);
-                }
-                if (item.name === 'In Stock') {
-                  navigate(item.to);
-                }
-              }}
-            >
-              <div className="w-6 h-6 mb-1 bg-purple-400 rounded" />
-              {item.name}
-            </button>
-          ))}
-        </nav>
-      </div>
+      {/* Sidebar Component */}
+      <Sidebar />
 
       <div className="flex-1">
         {/* Header */}
