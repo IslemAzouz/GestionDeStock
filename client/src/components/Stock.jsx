@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Search, Bell, ChevronDown, Menu } from "lucide-react";
+import Sidebar from "./Sidebar";
 
 const Stock = () => {
   const [stocks, setStocks] = useState([]);
@@ -77,6 +78,9 @@ const Stock = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar Component */}
+      <Sidebar />
+    <div className="min-h-screen bg-gray-50 flex-1">
       <div className="flex-1">
         <div className="p-6">
           <div className="flex justify-between mb-6">
@@ -207,6 +211,7 @@ const Stock = () => {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 };

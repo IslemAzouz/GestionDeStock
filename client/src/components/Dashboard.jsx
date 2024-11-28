@@ -1,7 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
-import { Menu } from 'lucide-react';
-import { Link } from 'react-router-dom'; 
+import Sidebar from './Sidebar';
 
 const chartData = [
   { month: 'Jan', value1: 300, value2: 250 },
@@ -43,28 +42,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-100">
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-20 min-h-screen bg-[#1a1f37] text-white">
-          <div className="p-4">
-            <Menu className="w-6 h-6" />
-          </div>
-          <nav className="flex flex-col gap-4 p-2">
-  {['Dashboard', 'In Stock', 'Sales', 'Orders', 'Users'].map((item) => {
-    let path = '#'; // Default path
-    if (item === 'In Stock') path = '/Stock';
-    if (item === 'Orders') path = '/orders';
-    if (item === 'Sales') path = '/sales';
-
-    return (
-      <Link key={item} to={path}>
-        <button className="p-2 rounded hover:bg-[#2a2f47] flex flex-col items-center text-xs">
-          <div className="w-6 h-6 mb-1 bg-gray-600 rounded" />
-          {item}
-        </button>
-      </Link>
-    );
-  })}
-</nav>
-        </div>
+        <Sidebar/>
 
         {/* Main Content */}
         <div className="flex-1 p-6">
