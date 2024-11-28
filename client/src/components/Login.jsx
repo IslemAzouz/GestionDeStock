@@ -10,20 +10,28 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await axios.post("http://localhost:4000/auth/login", {
         email,
         password,
       });
-      if (response.status === 200) {
+  
+      console.log("Login Response:", response.data); // Debug: log the entire response
+  
+      if (response.status === 200 && response.data.token) {
         localStorage.setItem("token", response.data.token);
-        window.location.href = "/dashboard"; 
+        console.log("Token saved:", response.data.token); // Debug: confirm the token is saved
+        window.location.href = "/dashboard";
+      } else {
+        throw new Error("Token not provided in the response");
       }
     } catch (error) {
+      console.error("Login Error:", error.response?.data || error.message); // Debug error details
       setError("Invalid credentials. Please try again.");
     }
   };
+  
 
   return (
     <div className="flex flex-col lg:flex-row h-screen">
