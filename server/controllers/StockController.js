@@ -68,10 +68,20 @@ const deleteStock = async (req, res) => {
   }
 };
 
+const getStockCount = async (req, res) => {
+  try {
+    const count = await stock.countDocuments();
+    res.status(200).json({ count });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching stock count", error });
+  }
+};
+
 module.exports = {
   getAllStocks,
   getStockById,
   addStock,
   updateStock,
   deleteStock,
+  getStockCount,
 };

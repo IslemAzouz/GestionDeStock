@@ -1,19 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import Sidebar from './Sidebar';
+import axios from 'axios';
 
 const chartData = [
   { month: 'Jan', value1: 300, value2: 250 },
   { month: 'Feb', value1: 200, value2: 300 },
   { month: 'Mar', value1: 200, value2: 300 },
   { month: 'Apr', value1: 180, value2: 300 },
-];
-
-const stockAlertData = [
-  { orderId: 'order ID', date: 'Date', quantity: 'Quantity', alertAmt: 'Alert amt.', status: 'Status' },
-  { orderId: 'order ID', date: 'Date', quantity: 'Quantity', alertAmt: 'Alert amt.', status: 'Status' },
-  { orderId: 'order ID', date: 'Date', quantity: 'Quantity', alertAmt: 'Alert amt.', status: 'Status' },
-  { orderId: 'order ID', date: 'Date', quantity: 'Quantity', alertAmt: 'Alert amt.', status: 'Status' },
 ];
 
 const MetricCard = ({ title, amount }) => (
@@ -38,11 +32,32 @@ const MetricCard = ({ title, amount }) => (
 );
 
 const Dashboard = () => {
+  const [totalStock, setTotalStock] = useState(0);
+  const [totalSales, setTotalSales] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
+
+  useEffect(() => {
+    // Fetch Total Stock
+    axios.get('http://localhost:4000/stock/getall')
+      .then(response => setTotalStock(response.data.length))
+      .catch(error => console.error('Error fetching total stock:', error));
+
+    // Fetch Total Sales
+    axios.get('http://localhost:4000/sales')
+      .then(response => setTotalSales(response.data.length))
+      .catch(error => console.error('Error fetching total sales:', error));
+
+    // Fetch Total Orders
+    axios.get('http://localhost:4000/order')
+      .then(response => setTotalOrders(response.data.length))
+      .catch(error => console.error('Error fetching total orders:', error));
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="flex">
         {/* Sidebar */}
-        <Sidebar/>
+        <Sidebar />
 
         {/* Main Content */}
         <div className="flex-1 p-6">
@@ -64,10 +79,9 @@ const Dashboard = () => {
 
           {/* Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <MetricCard title="Revenue" amount={30000} />
-            <MetricCard title="Sales Return" amount={30000} />
-            <MetricCard title="Purchase" amount={30000} />
-            <MetricCard title="Income" amount={30000} />
+            <MetricCard title="Total Stock" amount={totalStock} />
+            <MetricCard title="Total Sales" amount={totalSales} />
+            <MetricCard title="Total Orders" amount={totalOrders} />
           </div>
 
           {/* Charts Section */}
@@ -82,76 +96,12 @@ const Dashboard = () => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-
             <div className="bg-white rounded-lg shadow-sm">
               <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold">Top selling Products</h2>
+                <h2 className="text-lg font-semibold">Top Selling Products</h2>
               </div>
               <div className="p-4">
                 <div className="w-full h-48 bg-[#1a1f37] rounded-full" />
-              </div>
-            </div>
-          </div>
-
-          {/* Tables Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="bg-white rounded-lg shadow-sm">
-              <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold">Stock Alert</h2>
-              </div>
-              <div className="p-4">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="text-left">
-                        <th className="p-2">Order ID</th>
-                        <th className="p-2">Date</th>
-                        <th className="p-2">Quantity</th>
-                        <th className="p-2">Alert amt.</th>
-                        <th className="p-2">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {stockAlertData.map((row, index) => (
-                        <tr key={index} className="text-gray-600">
-                          <td className="p-2">{row.orderId}</td>
-                          <td className="p-2">{row.date}</td>
-                          <td className="p-2">{row.quantity}</td>
-                          <td className="p-2">{row.alertAmt}</td>
-                          <td className="p-2">{row.status}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm">
-              <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold">Top selling Products</h2>
-              </div>
-              <div className="p-4">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="text-left">
-                        <th className="p-2">Order ID</th>
-                        <th className="p-2">Quantity</th>
-                        <th className="p-2">Alert amt.</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {stockAlertData.map((row, index) => (
-                        <tr key={index} className="text-gray-600">
-                          <td className="p-2">{row.orderId}</td>
-                          <td className="p-2">{row.quantity}</td>
-                          <td className="p-2">{row.alertAmt}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
               </div>
             </div>
           </div>
