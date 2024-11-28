@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Search, Bell, ChevronDown, Menu } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
 import Sidebar from "./Sidebar";
 
 const Stock = () => {
@@ -121,18 +122,12 @@ const Stock = () => {
                     <td className="p-3">{stock.storeName}</td>
                     <td className="p-3">{stock.quantity}</td>
                     <td className="p-3">
-                      <button
-                        className="text-blue-600 hover:underline mr-2"
-                        onClick={() => openModal(stock)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="text-red-600 hover:underline"
-                        onClick={() => handleDelete(stock._id)}
-                      >
-                        Delete
-                      </button>
+                    <button onClick={() => openModal(stock)}>
+                            <Pencil className="w-5 h-5 text-gray-500 hover:text-black-700" />
+                    </button>
+                      <button onClick={() => handleDelete(stock._id)} className="ml-4">
+                            <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700" />
+                          </button>
                     </td>
                   </tr>
                 ))}
