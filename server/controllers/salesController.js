@@ -74,4 +74,13 @@ const deleteSale = (req, res) => {
     .catch((err) => res.status(500).send(err));
 };
 
-module.exports = { getSales, getSale, addSale, updateSale, deleteSale };
+const getSalesCount = async (req, res) => {
+  try {
+    const count = await Sale.countDocuments();
+    res.status(200).json({ count });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching sales count", error });
+  }
+};
+
+module.exports = { getSales, getSale, addSale, updateSale, deleteSale ,getSalesCount };
