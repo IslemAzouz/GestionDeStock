@@ -23,14 +23,17 @@ const getSale = async (req, res) => {
 
 // Add a new sale
 const addSale = (req, res) => {
-  const { date, customer, product, quantity, totalAmount } = req.body;
+  const {  customer, product, quantity , price } = req.body;
 
-  if (!date || !customer || !product || !quantity || !totalAmount) {
+  if (!customer || !product || !quantity ) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
+  const totalAmount = price * quantity;
+  const saleDate = req.body.date || new Date();
+
   Sale.create({
-    date,
+    date : saleDate ,
     customer,
     product,
     quantity,
