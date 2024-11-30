@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Search, Bell, ChevronDown, Menu } from "lucide-react";
 import { Trash2, Pencil } from "lucide-react";
+import { ToastContainer, toast } from 'react-toastify';
 import Sidebar from "./Sidebar";
 
 const Stock = () => {
@@ -77,12 +78,36 @@ const Stock = () => {
       stock.storeName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar Component */}
       <Sidebar />
     <div className="min-h-screen bg-gray-50 flex-1">
       <div className="flex-1">
+         {/* Header */}
+        <header className="bg-white p-4 flex justify-between items-center border-b">
+          <div className="flex items-center gap-4">
+            <button className="lg:hidden">
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="flex items-center gap-4">
+            <button className="p-2">
+              <Search className="w-5 h-5 text-gray-500" />
+            </button>
+            <button className="p-2 relative">
+              <Bell className="w-5 h-5 text-gray-500" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-gray-200" />
+              <span className="text-sm">user</span>
+              <ChevronDown className="w-4 h-4 text-gray-500" />
+            </div>
+          </div>
+        </header>
         <div className="p-6">
           <div className="flex justify-between mb-6">
             <div className="relative">
