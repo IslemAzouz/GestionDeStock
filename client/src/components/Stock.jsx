@@ -41,10 +41,7 @@ const Stock = () => {
   const handleSave = async () => {
     try {
       if (editMode) {
-        await axios.put(
-          `http://localhost:4000/stock/update/${modalData._id}`,
-          modalData
-        );
+        await axios.put(`http://localhost:4000/stock/update/${modalData._id}`,modalData);
       } else {
         await axios.post("http://localhost:4000/stock/add", modalData);
       }

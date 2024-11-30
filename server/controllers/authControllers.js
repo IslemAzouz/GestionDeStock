@@ -9,7 +9,7 @@ const createToken = (id) => {
 };
 
 const handleErrors = (err) => {
-  let errors = { firstName: "", lastName: "", email: "", phone: "", password: "", agreeTerms: "" };
+  let errors = { firstName: "", lastName: "", email: "", phone: "", password: "", agreeTerms: "", role: "" };
 
   console.log(err);
   if (err.message === "incorrect email") {
@@ -21,7 +21,13 @@ const handleErrors = (err) => {
   }
 
   if (err.code === 11000) {
-    errors.email = "Email is already registered";
+    // Handle unique constraint errors (email or phone)
+    if (err.keyValue.email) {
+      errors.email = "Email is already registered";
+    }
+    if (err.keyValue.phone) {
+      errors.phone = "Phone number is already registered";
+    }
     return errors;
   }
 
@@ -36,10 +42,10 @@ const handleErrors = (err) => {
 
 module.exports.register = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, password, agreeTerms } = req.body;
-    
+    const { firstName, lastName, email, phone, password, agreeTerms, role } = req.body;
 
-    const user = await User.create({ firstName, lastName, email, phone, password, agreeTerms });
+    // Create the user in the database
+    const user = await User.create({ firstName, lastName, email, phone, password, agreeTerms, role });
     
     // Create JWT token
     const token = createToken(user._id);
@@ -66,11 +72,11 @@ module.exports.login = async (req, res) => {
     const user = await User.login(email, password);
     const token = createToken(user._id);
 
-      // Set the JWT token as a cookie
-      res.cookie("jwt", token, { httpOnly: false, maxAge: maxAge * 1000 });
+    // Set the JWT token as a cookie
+    res.cookie("jwt", token, { httpOnly: false, maxAge: maxAge * 1000 });
 
-      // Include the token in the response JSON
-      res.status(200).json({ user: user._id, token, status: true });
+    // Include the token and role in the response JSON
+    res.status(200).json({ user: user._id, role: user.role, token, status: true });
   } catch (err) {
     const errors = handleErrors(err);
     res.json({ errors, status: false });

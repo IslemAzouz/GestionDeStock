@@ -9,6 +9,7 @@ const Register = () => {
     phone: "",
     password: "",
     agreeTerms: false,
+    role: "", // Added role field
   });
 
   const handleChange = (e) => {
@@ -25,6 +26,12 @@ const Register = () => {
     // Check if the user agreed to the terms and conditions
     if (!formData.agreeTerms) {
       alert("You must agree to the terms and conditions.");
+      return;
+    }
+
+    // Check if a role is selected
+    if (!formData.role) {
+      alert("Please select a role.");
       return;
     }
 
@@ -132,6 +139,24 @@ const Register = () => {
               onChange={handleChange}
               required
             />
+
+            {/* Role Selection */}
+            <div>
+              <select
+                name="role"
+                id="role"
+                className="w-full p-3 border border-gray-300 rounded-md"
+                value={formData.role}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>
+                  Choose your role
+                </option>
+                <option value="stock manager">Stock Manager</option>
+                <option value="commande manager">Commande Manager</option>
+              </select>
+            </div>
 
             {/* Terms and Conditions */}
             <div className="flex items-center">

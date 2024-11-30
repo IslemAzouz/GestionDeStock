@@ -28,6 +28,11 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     required: [true, "You must agree to the terms and conditions"],
   },
+  role: {
+    type: String,
+    enum: ["commande manager", "stock manager"], 
+    required: [true, "Role is required"],
+  },
 });
 
 // Hash password before saving
