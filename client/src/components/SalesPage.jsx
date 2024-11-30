@@ -6,6 +6,7 @@ import { Search, Trash2, Plus, Pencil } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Sidebar from './Sidebar';
+import Header from './Header';
 
 const SalesPage = () => {
   const [salesData, setSalesData] = useState([]);
@@ -137,6 +138,9 @@ const SalesPage = () => {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
+      <div className="flex-1 p-6">
+          {/* Header */}
+          <Header title="Sales" user="user" /> {/* Pass props to Header */}
       <div className="flex-1 flex flex-col bg-gray-50">
         <ToastContainer />
         <div className="flex items-center justify-between p-6 bg-white shadow">
@@ -277,6 +281,7 @@ const SalesPage = () => {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
