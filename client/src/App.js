@@ -7,6 +7,7 @@ import Dashboard from "./components/Dashboard";
 import OrdersPage from "./components/OrdersPage";
 import Stock from "./components/Stock";
 import SalesPage from "./components/SalesPage"; 
+import UsersPage from "./components/UsersPage"; 
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/stock" element={<Stock />} /> 
         <Route path="/sales" element={<SalesPage />} /> 
+        <Route path="/users" element={<UsersPage />} /> 
       </Routes>
     </BrowserRouter>
   );

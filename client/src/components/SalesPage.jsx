@@ -1,276 +1,285 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Search, Bell, ChevronDown, Menu } from "lucide-react";
-import { Trash2, Pencil } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-import Sidebar from "./Sidebar";
+import 'react-toastify/dist/ReactToastify.css';
+import { Search, Trash2, Plus, Pencil } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import Sidebar from './Sidebar';
 
-const Stock = () => {
-  const [stocks, setStocks] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+const SalesPage = () => {
+  const [salesData, setSalesData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({
-    product: "",
-    category: "",
-    storeName: "",
-    quantity: "",
+  const [newSale, setNewSale] = useState({
+    customer: '',
+    product: '',
+    quantity: '',
+    price: '',
+    totalAmount: '',
   });
+
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
-    fetchStocks();
+    fetchSales();
   }, []);
 
-  const fetchStocks = async () => {
+  const fetchSales = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/stock/getall");
-      setStocks(response.data);
-    } catch (error) {
-      console.error("Error fetching stocks:", error);
+      const response = await axios.get('http://localhost:4000/sales/');
+      setSalesData(response.data);
+      setFilteredData(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch sales data');
+      setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:4000/stock/delete/${id}`);
-      setStocks(stocks.filter((stock) => stock._id !== id));
-    } catch (error) {
-      console.error("Error deleting stock:", error);
-    }
-  };
+  useEffect(() => {
+    const filterSales = () => {
+      const data = searchTerm
+        ? salesData.filter((sale) =>
+            sale.product.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        : salesData;
 
-  const handleSave = async () => {
+      setFilteredData(data);
+    };
+
+    filterSales();
+  }, [searchTerm, salesData]);
+
+  // Calculate total amount whenever quantity or price changes
+  useEffect(() => {
+    if (newSale.quantity && newSale.price) {
+      const totalAmount = newSale.quantity * newSale.price;
+      setNewSale((prevSale) => ({
+        ...prevSale,
+        totalAmount,
+      }));
+    }
+  }, [newSale.quantity, newSale.price]);
+
+  const handleSaveSale = async () => {
     try {
       if (editMode) {
         await axios.put(
-          `http://localhost:4000/stock/update/${modalData._id}`,
-          modalData
+          `http://localhost:4000/sales/update/${newSale._id}`,
+          newSale
         );
+        toast.success('Sale updated successfully');
       } else {
-        await axios.post("http://localhost:4000/stock/add", modalData);
+        await axios.post('http://localhost:4000/sales/add', newSale);
+        toast.success('Sale added successfully');
       }
       setShowModal(false);
-      setModalData({ product: "", category: "", storeName: "", quantity: "" });
-      fetchStocks();
+      setNewSale({ customer: '', product: '', quantity: '', price: '', totalAmount: '' });
+      fetchSales();
     } catch (error) {
-      console.error("Error saving stock:", error);
+      console.error('Error saving sale:', error);
+      toast.error('Failed to save sale');
     }
   };
 
-  const openModal = (stock = null) => {
-    if (stock) {
-      setModalData(stock);
+  const openModal = (sale) => {
+    if (sale) {
       setEditMode(true);
+      setNewSale(sale);
     } else {
-      setModalData({ product: "", category: "", storeName: "", quantity: "" });
       setEditMode(false);
+      setNewSale({ customer: '', product: '', quantity: '', price: '', totalAmount: '' });
     }
     setShowModal(true);
   };
 
-  const closeModal = () => setShowModal(false);
+  const handleDeleteSale = async (saleId) => {
+    try {
+      await axios.delete(`http://localhost:4000/sales/delete/${saleId}`);
+      setSalesData((prev) => prev.filter((sale) => sale._id !== saleId));
+      setFilteredData((prev) => prev.filter((sale) => sale._id !== saleId));
+      toast.success('Sale deleted successfully');
+    } catch (error) {
+      console.error('Error deleting sale:', error);
+      toast.error('Failed to delete sale');
+    }
+  };
 
-  // Filter stocks based on the search query
-  const filteredStocks = stocks.filter(
-    (stock) =>
-      stock.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      stock.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      stock.storeName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  // Export filtered stock data to Excel
   const handleExportToExcel = () => {
     try {
-      const exportData = filteredStocks.map((stock) => ({
-        Product: stock.product || '',
-        Category: stock.category || '',
-        Store: stock.storeName || '',
-        Quantity: stock.quantity || 0,
+      const exportData = filteredData.map((sale) => ({
+        Customer: sale.customer || '',
+        Product: sale.product || '',
+        Quantity: sale.quantity || 0,
+        Price: sale.price || 0,
+        Total: sale.totalAmount || 0,
       }));
 
       const worksheet = XLSX.utils.json_to_sheet(exportData);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Stocks');
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sales');
       const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       const data = new Blob([excelBuffer], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
-      saveAs(data, `stocks_${new Date().toISOString().split('T')[0]}.xlsx`);
-      toast.success('Stocks exported successfully');
+      saveAs(data, `sales_${new Date().toISOString().split('T')[0]}.xlsx`);
+      toast.success('Sales exported successfully');
     } catch (error) {
-      console.error('Error exporting stocks:', error);
-      toast.error('Failed to export stocks');
+      console.error('Error exporting sales:', error);
+      toast.error('Failed to export sales');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar Component */}
+    <div className="flex min-h-screen">
       <Sidebar />
-      <div className="min-h-screen bg-gray-50 flex-1">
-        <div className="flex-1">
-          {/* Header */}
-          <header className="bg-white p-4 flex justify-between items-center border-b">
-            <div className="flex items-center gap-4">
-              <button className="lg:hidden">
-                <Menu className="w-6 h-6" />
+      <div className="flex-1 flex flex-col bg-gray-50">
+        <ToastContainer />
+        <div className="flex items-center justify-between p-6 bg-white shadow">
+          <h1 className="text-xl font-semibold">Sales</h1>
+          
+          <button
+            onClick={() => openModal()}
+            className="px-4 py-2 text-white bg-purple-600 rounded hover:bg-purple-700 flex items-center"
+          >
+            <Plus className="mr-2" /> Add Sale
+          </button>
+          <button 
+                onClick={handleExportToExcel}
+                className="px-4 py-2 border rounded-lg text-purple-600 border-purple-600 hover:bg-purple-50">
+                  Export to Excel
               </button>
-            </div>
-            <div className="flex items-center gap-4">
-              <button className="p-2">
-                <Search className="w-5 h-5 text-gray-500" />
-              </button>
-              <button className="p-2 relative">
-                <Bell className="w-5 h-5 text-gray-500" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gray-200" />
-                <span className="text-sm">user</span>
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              </div>
-            </div>
-          </header>
-          <div className="p-6">
-            <div className="flex justify-between mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+        </div>
+
+        <div className="flex gap-4 p-6 bg-white">
+          <div className="flex-1 relative">
+            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by product"
+              className="w-full pl-10 pr-4 py-2 border rounded focus:outline-none focus:border-purple-600"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-auto">
+          <table className="w-full table-auto border-collapse bg-white">
+            <thead className="bg-gray-100 border-b">
+              <tr>
+                <th className="p-4 text-left text-sm font-semibold">Customer</th>
+                <th className="p-4 text-left text-sm font-semibold">Product</th>
+                <th className="p-4 text-left text-sm font-semibold">Quantity</th>
+                <th className="p-4 text-left text-sm font-semibold">Price</th>
+                <th className="p-4 text-left text-sm font-semibold">Total</th>
+                <th className="p-4 text-left text-sm font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {loading ? (
+                <tr>
+                  <td colSpan="6" className="p-4 text-center">
+                    Loading...
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan="6" className="p-4 text-center text-red-500">
+                    {error}
+                  </td>
+                </tr>
+              ) : (
+                filteredData.map((sale) => (
+                  <tr key={sale._id} className="hover:bg-gray-50">
+                    <td className="p-4">{sale.customer}</td>
+                    <td className="p-4">{sale.product}</td>
+                    <td className="p-4">{sale.quantity}</td>
+                    <td className="p-4">{sale.price}</td>
+                    <td className="p-4">{sale.totalAmount}</td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => openModal(sale)}>
+                        <Pencil className="w-5 h-5 text-gray-500 hover:text-black-700" />
+                       
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSale(sale._id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">
+                {editMode ? 'Edit Sale' : 'Add New Sale'}
+              </h2>
+              <div className="grid gap-4">
                 <input
                   type="text"
-                  placeholder="Quick search"
-                  className="pl-10 pr-4 py-2 border rounded-md w-64"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="px-4 py-2 border rounded"
+                  value={newSale.customer}
+                  onChange={(e) => setNewSale({ ...newSale, customer: e.target.value })}
+                  placeholder="Customer"
                 />
-              </div>
-
-              <div className="flex gap-4">
-                <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-                  onClick={() => openModal()}
-                >
-                  + New Stock
-                </button>
-                <button
-                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-                  onClick={handleExportToExcel}
-                >
-                  Export to Excel
-                </button>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="p-3 text-left">Product</th>
-                    <th className="p-3 text-left">Category</th>
-                    <th className="p-3 text-left">Store Name</th>
-                    <th className="p-3 text-left">Quantity</th>
-                    <th className="p-3 text-left">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredStocks.map((stock) => (
-                    <tr key={stock._id} className="border-b hover:bg-gray-50">
-                      <td className="p-3">{stock.product}</td>
-                      <td className="p-3">{stock.category}</td>
-                      <td className="p-3">{stock.storeName}</td>
-                      <td className="p-3">{stock.quantity}</td>
-                      <td className="p-3">
-                        <button onClick={() => openModal(stock)}>
-                          <Pencil className="w-5 h-5 text-gray-500 hover:text-black-700" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(stock._id)}
-                          className="ml-4"
-                        >
-                          <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {showModal && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="bg-white p-6 rounded-md w-1/3">
-                <h2 className="text-xl font-semibold mb-4">
-                  {editMode ? "Edit Stock" : "Add New Stock"}
-                </h2>
-                <form>
-                  <div className="mb-4">
-                    <label className="block mb-2">Product</label>
-                    <input
-                      type="text"
-                      className="w-full border rounded-md px-3 py-2"
-                      value={modalData.product}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, product: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block mb-2">Category</label>
-                    <input
-                      type="text"
-                      className="w-full border rounded-md px-3 py-2"
-                      value={modalData.category}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, category: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block mb-2">Store Name</label>
-                    <input
-                      type="text"
-                      className="w-full border rounded-md px-3 py-2"
-                      value={modalData.storeName}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, storeName: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block mb-2">Quantity</label>
-                    <input
-                      type="number"
-                      className="w-full border rounded-md px-3 py-2"
-                      value={modalData.quantity}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, quantity: e.target.value })
-                      }
-                    />
-                  </div>
-                </form>
-                <div className="flex justify-end gap-4">
-                  <button
-                    className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-                    onClick={closeModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    onClick={handleSave}
-                  >
-                    Save
-                  </button>
+                <input
+                  type="text"
+                  className="px-4 py-2 border rounded"
+                  value={newSale.product}
+                  onChange={(e) => setNewSale({ ...newSale, product: e.target.value })}
+                  placeholder="Product"
+                />
+                <input
+                  type="number"
+                  className="px-4 py-2 border rounded"
+                  value={newSale.quantity}
+                  onChange={(e) => setNewSale({ ...newSale, quantity: e.target.value })}
+                  placeholder="Quantity"
+                />
+                <input
+                  type="number"
+                  className="px-4 py-2 border rounded"
+                  value={newSale.price}
+                  onChange={(e) => setNewSale({ ...newSale, price: e.target.value })}
+                  placeholder="Price"
+                />
+                <div className="p-2">
+                  Total: {newSale.totalAmount}
                 </div>
               </div>
+              <div className="flex justify-end mt-4">
+                <button
+                  className="px-4 py-2 bg-gray-300 rounded mr-2"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 bg-green-600 text-white rounded"
+                  onClick={handleSaveSale}
+                >
+                  {editMode ? 'Save Changes' : 'Add Sale'}
+                </button>
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default Stock;
+export default SalesPage;
