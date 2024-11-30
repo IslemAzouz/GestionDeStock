@@ -7,6 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Sidebar from './Sidebar';
+import Header from './Header';
+
 
 const OrdersPage = () => {
   const navigate = useNavigate();
@@ -169,34 +171,15 @@ const OrdersPage = () => {
       {/* Sidebar Component */}
       <Sidebar />
 
-      <div className="flex-1">
-        {/* Header */}
-        <header className="bg-white p-4 flex justify-between items-center border-b">
-          <div className="flex items-center gap-4">
-            <button className="lg:hidden">
-              <Menu className="w-6 h-6" />
-            </button>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="p-2">
-              <Search className="w-5 h-5 text-gray-500" />
-            </button>
-            <button className="p-2 relative">
-              <Bell className="w-5 h-5 text-gray-500" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gray-200" />
-              <span className="text-sm">user</span>
-              <ChevronDown className="w-4 h-4 text-gray-500" />
-            </div>
-          </div>
-        </header>
+      <div className="flex-1 p-6">
+          {/* Header */}
+          <Header title="Orders" user="user" /> {/* Pass props to Header */}
+
 
         <div className="p-6">
           {/* Page title and buttons */}
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-semibold">Orders</h1>
+            <h1 className="text-2xl font-semibold text-gray-50">............................</h1>
             <div className="flex gap-3">
               <button 
               onClick={handleExportToExcel}

@@ -4,6 +4,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from "./Sidebar";
+import Header from './Header';
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -56,20 +57,9 @@ const UsersPage = () => {
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar /> 
       <div className="flex-1 p-6 "> 
-        <header className="bg-white p-4 border-b">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-semibold">Users</h1>
-            <div className="flex items-center gap-4">
-              <input
-                type="text"
-                className="px-4 py-2 border rounded-lg"
-                placeholder="Search by role or email"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-        </header>
+      <div className="flex-1 p-6">
+          {/* Header */}
+          <Header title="Users" user="user" /> {/* Pass props to Header */}
 
         <div className="mt-6">
           {/* Users Table */}
@@ -115,7 +105,9 @@ const UsersPage = () => {
         <ToastContainer />
       </div>
     </div>
+    </div>
   );
+  
 };
 
 export default UsersPage;
