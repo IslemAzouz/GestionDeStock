@@ -135,19 +135,24 @@ const SalesPage = () => {
   };
 
   return (
-    
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col bg-gray-50">
         <ToastContainer />
         <div className="flex items-center justify-between p-6 bg-white shadow">
           <h1 className="text-xl font-semibold">Sales</h1>
+          
           <button
             onClick={() => openModal()}
             className="px-4 py-2 text-white bg-purple-600 rounded hover:bg-purple-700 flex items-center"
           >
             <Plus className="mr-2" /> Add Sale
           </button>
+          <button 
+                onClick={handleExportToExcel}
+                className="px-4 py-2 border rounded-lg text-purple-600 border-purple-600 hover:bg-purple-50">
+                  Export to Excel
+              </button>
         </div>
 
         <div className="flex gap-4 p-6 bg-white">
