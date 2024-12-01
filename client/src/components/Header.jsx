@@ -17,7 +17,7 @@ const Header = ({ title, onSearch, searchTerm, user }) => {
         </button>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gray-200" />
-          <span className="text-sm">{user}</span>
+          <span className="text-sm">{user.email}</span>
           <ChevronDown className="w-4 h-4 text-gray-500" />
         </div>
       

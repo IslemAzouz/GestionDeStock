@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import {  useLocation } from 'react-router-dom';
+
 import Sidebar from './Sidebar';
 import Header from './Header'; // Import the Header component
 import axios from 'axios';
@@ -33,9 +35,16 @@ const MetricCard = ({ title, amount }) => (
 );
 
 const Dashboard = () => {
+  const location = useLocation();
+
   const [totalStock, setTotalStock] = useState(0);
   const [totalSales, setTotalSales] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
+
+  const role = location.state?.role; // Get role from location state
+  console.log("AdminDashboard role:", role); // Debugging line
+
+
 
   useEffect(() => {
     // Fetch Total Stock
@@ -58,7 +67,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-100">
       <div className="flex">
         {/* Sidebar */}
-        <Sidebar />
+        <Sidebar role={role} />
 
         {/* Main Content */}
         <div className="flex-1 p-6">
