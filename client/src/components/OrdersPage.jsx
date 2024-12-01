@@ -14,8 +14,7 @@ const OrdersPage = () => {
   const navigate = useNavigate();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newOrder, setNewOrder] = useState({
-    date: '',
-   
+    date: '',  
     storeName: '',
     product: '',
     category : '',
@@ -53,8 +52,8 @@ const OrdersPage = () => {
       
       if (searchTerm) {
         data = data.filter(order => 
-          order.product.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.date.includes(searchTerm)
+          (order.product && order.product.toLowerCase().includes(searchTerm.toLowerCase())) || 
+          (order.date && order.date.includes(searchTerm))
         );
       }
 

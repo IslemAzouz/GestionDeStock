@@ -53,8 +53,8 @@ const OrdersPage = () => {
       
       if (searchTerm) {
         data = data.filter(order => 
-          order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.date.includes(searchTerm)
+          (order.product && order.product.toLowerCase().includes(searchTerm.toLowerCase())) || 
+          (order.date && order.date.includes(searchTerm))
         );
       }
 
