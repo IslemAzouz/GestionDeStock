@@ -122,7 +122,7 @@ const OrdersPage = () => {
     try {
       const exportData = filteredData.map(order => ({
         Date: order.date,
-        'Sales Channel': order.salesChannel,
+        'Sales Channel': order.storeName,
         Destination: order.destination,
         Items: order.items,
         Status: order.status
@@ -193,7 +193,7 @@ const OrdersPage = () => {
                 onClick={() => {
                   setNewOrder({
                     date: '',
-                    salesChannel: '',
+                    storeName: '',
                     destination: '',
                     items: 0,
                     status: ''
@@ -249,7 +249,7 @@ const OrdersPage = () => {
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Date</th>
                     
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Sales Channel</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Store Name</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">product</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Items</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Status</th>
@@ -273,7 +273,7 @@ const OrdersPage = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.date}</td>
                        
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.salesChannel}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.storeName}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.product}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.items}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
