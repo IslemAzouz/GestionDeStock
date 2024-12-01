@@ -16,8 +16,9 @@ const OrdersPage = () => {
   const [newOrder, setNewOrder] = useState({
     date: '',
     customer: '',
-    salesChannel: '',
-    destination: '',
+    storeName: '',
+    product: '',
+    category : '',
     items: 0,
     status: ''
   });
@@ -74,7 +75,7 @@ const OrdersPage = () => {
 
   const handleAddOrder = async (e) => {
     e.preventDefault();
-    if (!newOrder.date || !newOrder.customer || !newOrder.salesChannel || !newOrder.destination || newOrder.items <= 0 || !newOrder.status) {
+    if (!newOrder.date || !newOrder.customer || !newOrder.storeName ||  !newOrder.category || !newOrder.product || newOrder.items <= 0 || !newOrder.status) {
       toast.error('Please fill in all fields correctly');
       return;
     }
@@ -91,7 +92,7 @@ const OrdersPage = () => {
 
   const handleUpdateOrder = async (e) => {
     e.preventDefault();
-    if (!newOrder.date || !newOrder.customer || !newOrder.salesChannel || !newOrder.destination || newOrder.items <= 0 || !newOrder.status) {
+    if (!newOrder.date || !newOrder.customer || !newOrder.storeName ||  !newOrder.category  || !newOrder.product || newOrder.items <= 0 || !newOrder.status) {
       toast.error('Please fill in all fields correctly');
       return;
     }
@@ -252,7 +253,7 @@ const OrdersPage = () => {
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Date</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Customer</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Sales Channel</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Destination</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">product</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Items</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Status</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Action</th>
@@ -276,7 +277,7 @@ const OrdersPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.date}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.salesChannel}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.destination}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.product}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.items}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <span
@@ -327,100 +328,115 @@ const OrdersPage = () => {
 
       {/* Popup for Add/Edit Order */}
       {isPopupOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl mb-4">{editOrder ? 'Edit Order' : 'Add Order'}</h2>
-            <form onSubmit={editOrder ? handleUpdateOrder : handleAddOrder}>
-              <div className="mb-4">
-                <label className="block mb-1">Date</label>
-                <input
-                  type="date"
-                  name="date"
-                  value={newOrder.date}
-                  onChange={handleInputChange}
-                  className="border rounded p-2 w-full"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1">Customer</label>
-                <input
-                  type="text"
-                  name="customer"
-                  value={newOrder.customer}
-                  onChange={handleInputChange}
-                  className="border rounded p-2 w-full"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1">Sales Channel</label>
-                <input
-                  type="text"
-                  name="salesChannel"
-                  value={newOrder.salesChannel}
-                  onChange={handleInputChange}
-                  className="border rounded p-2 w-full"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1">Destination</label>
-                <input
-                  type="text"
-                  name="destination"
-                  value={newOrder.destination}
-                  onChange={handleInputChange}
-                  className="border rounded p-2 w-full"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1">Items</label>
-                <input
-                  type="number"
-                  name="items"
-                  value={newOrder.items}
-                  onChange={handleInputChange}
-                  className="border rounded p-2 w-full"
-                  required
-                  min="1"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1">Status</label>
-                <select
-                  name="status"
-                  value={newOrder.status}
-                  onChange={handleInputChange}
-                  className="border rounded p-2 w-full"
-                  required
-                >
-                  <option value="">Select Status</option>
-                  <option value="Pending">Pending</option>
-                  <option value="Completed">Completed</option>
-                  <option value="Cancelled">Cancelled</option>
-                </select>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
-                  onClick={() => setIsPopupOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                  {editOrder ? 'Update Order' : 'Add Order'}
-                </button>
-              </div>
-            </form>
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-hidden">
+      <h2 className="text-xl mb-4">{editOrder ? 'Edit Order' : 'Add Order'}</h2>
+      <div className="overflow-y-auto max-h-[60vh]"> {/* Add this to make the form scrollable */}
+        <form onSubmit={editOrder ? handleUpdateOrder : handleAddOrder}>
+          <div className="mb-4">
+            <label className="block mb-1">Date</label>
+            <input
+              type="date"
+              name="date"
+              value={newOrder.date}
+              onChange={handleInputChange}
+              className="border rounded p-2 w-full"
+              required
+            />
           </div>
-        </div>
-      )}
+          <div className="mb-4">
+            <label className="block mb-1">Customer</label>
+            <input
+              type="text"
+              name="customer"
+              value={newOrder.customer}
+              onChange={handleInputChange}
+              className="border rounded p-2 w-full"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1">Category</label>
+            <input
+              type="text"
+              name="category"
+              value={newOrder.category}
+              onChange={handleInputChange}
+              className="border rounded p-2 w-full"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1">Product</label>
+            <input
+              type="text"
+              name="product"
+              value={newOrder.product}
+              onChange={handleInputChange}
+              className="border rounded p-2 w-full"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1">Store Name</label>
+            <input
+              type="text"
+              name="storeName"
+              value={newOrder.storeName}
+              onChange={handleInputChange}
+              className="border rounded p-2 w-full"
+              required
+            />
+          </div>
+         
+          <div className="mb-4">
+            <label className="block mb-1">Items</label>
+            <input
+              type="number"
+              name="items"
+              value={newOrder.items}
+              onChange={handleInputChange}
+              className="border rounded p-2 w-full"
+              required
+              min="1"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1">Status</label>
+            <select
+              name="status"
+              value={newOrder.status}
+              onChange={handleInputChange}
+              className="border rounded p-2 w-full"
+              required
+            >
+              <option value="">Select Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
+              onClick={() => setIsPopupOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              {editOrder ? 'Update Order' : 'Add Order'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

@@ -1,5 +1,5 @@
 const Sale = require('../model/Sale');
-const Stock = require('../model/StockModel'); // Import the Stock model
+const Order = require('../model/Order'); // Import the Stock model
 
 
 // Fetch all sales
@@ -25,7 +25,7 @@ const getSale = async (req, res) => {
 
 // Add a new sale
 const addSale = async (req, res) => {
-  const { customer, product, quantity, price, category, storeName } = req.body;
+  const { customer, product, quantity, price } = req.body;
 
   if (!customer || !product || !quantity) {
     return res.status(400).json({ message: 'All fields are required' });
@@ -41,19 +41,18 @@ const addSale = async (req, res) => {
       customer,
       product,
       quantity,
-      totalAmount,
-      category,  
-      storeName, 
+      price,
+      totalAmount, 
     });
 
     // Update the stock after sale
-    const productInStock = await Stock.findOne({ product });
+    const StockProduct = await Order.findOne({ product });
 
-    if (productInStock) {
-      if (productInStock.quantity >= quantity) {
+    if (StockProduct) {
+      if (StockProduct.items >= quantity) {
         // Decrease the stock quantity
-        productInStock.quantity -= quantity;
-        await productInStock.save();
+        StockProduct.items -= quantity;
+        await StockProduct.save();
       } else {
         return res.status(400).json({ message: 'Not enough stock available' });
       }

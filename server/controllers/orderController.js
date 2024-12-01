@@ -27,9 +27,9 @@ const getOrder = async (req, res) => {
 const addOrder = async function (req, res) {
   console.log(req.body); // Log the incoming request body for debugging
 
-  const { date, customer, product, destination, items, status } = req.body;
+  const { date, customer, product, items, status ,category ,storeName} = req.body;
 
-  if (!date || !customer || !destination || !product || !items || !status) {
+  if (!date || !customer  || !product || !items || !status || !category || !storeName) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
@@ -39,9 +39,11 @@ const addOrder = async function (req, res) {
       date,
       customer,
       product,
-      destination,
       items, 
       status,
+      category,
+      storeName
+
     });
 
     // Check if the order status is "completed"
@@ -73,29 +75,48 @@ const addOrder = async function (req, res) {
 
 
 
-const updateOrder = function (req, res) {
-  Order.findByIdAndUpdate(
-    req.params.id,
-    {
-      date: req.body.date,
-      customer: req.body.customer,
-      salesChannel: req.body.salesChannel,
-      destination: req.body.destination,
-      items: req.body.items,
-      status: req.body.status,
-    },
-    { new: true }
-  )
-    .then((result) => {
-      if (!result) {
-        return res.status(404).json({ message: 'Order not found' });
+const updateOrder = async function (req, res) {
+  try {
+    const { id } = req.params;
+    const { date, customer, product, items, status, category, storeName } = req.body;
+
+    // Validate required fields
+    if (!date || !customer  || !product || !items || !status) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { date, customer, product, items, status, category, storeName },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (status === 'completed') {
+      const productInStock = await Stock.findOne({ product });
+
+      if (productInStock) {
+        productInStock.quantity += items; // Update stock quantity
+        await productInStock.save();
+      } else {
+        await Stock.create({
+          product,
+          category,
+          storeName,
+          quantity: items,
+        });
       }
-      res.status(200).send(result);
-    })
-    .catch((err) => {
-      res.status(500).send(err);
-    });
+    }
+
+    res.status(200).json(updatedOrder);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update order', error: error.message });
+  }
 };
+
 
 const deleteOrder = function (req, res) {
   Order.findByIdAndDelete(req.params.id)
@@ -118,5 +139,22 @@ const getOrderCount = async (req, res) => {
     res.status(500).json({ message: "Error fetching order count", error });
   }
 };
+const getOrdersByStatus = async (req, res) => {
+  try {
+    const { status } = req.params; // Get status from request parameters
 
-module.exports = { getOrders, getOrder, addOrder, updateOrder, deleteOrder , getOrderCount};
+    // Find orders with the matching status
+    const orders = await Order.find({ status });
+
+    if (orders.length === 0) {
+      return res.status(404).json({ message: `No orders found with status: ${status}` });
+    }
+
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching orders by status", error: error.message });
+  }
+};
+
+
+module.exports = { getOrders, getOrder, addOrder, updateOrder, deleteOrder , getOrderCount , getOrdersByStatus};
