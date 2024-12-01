@@ -73,14 +73,13 @@ const addOrder = async function (req, res) {
 };
 
 
-
 const updateOrder = async function (req, res) {
   try {
     const { id } = req.params;
     const { date, product, items, status, category, storeName } = req.body;
 
     // Validate required fields
-    if (!date   || !product || !items || !status) {
+    if (!date || !product || !items || !status) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 

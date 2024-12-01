@@ -9,7 +9,7 @@ const Register = () => {
     phone: "",
     password: "",
     agreeTerms: false,
-    role: "", // Added role field
+    role: "",
   });
 
   const handleChange = (e) => {
