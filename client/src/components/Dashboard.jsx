@@ -48,7 +48,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     // Fetch Total Stock
-    axios.get('http://localhost:4000/stock/getall')
+    axios.get('http://localhost:4000/order/status/Completed')
       .then(response => setTotalStock(response.data.length))
       .catch(error => console.error('Error fetching total stock:', error));
 
