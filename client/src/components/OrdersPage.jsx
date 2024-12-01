@@ -342,17 +342,7 @@ const OrdersPage = () => {
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block mb-1">product</label>
-            <input
-              type="text"
-              name="product"
-              value={newOrder.product}
-              onChange={handleInputChange}
-              className="border rounded p-2 w-full"
-              required
-            />
-          </div>
+          
           <div className="mb-4">
             <label className="block mb-1">Category</label>
             <input

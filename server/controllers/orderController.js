@@ -27,9 +27,9 @@ const getOrder = async (req, res) => {
 const addOrder = async function (req, res) {
   console.log(req.body); // Log the incoming request body for debugging
 
-  const { date, customer, product, items, status ,category ,storeName} = req.body;
+  const { date, product, items, status ,category ,storeName} = req.body;
 
-  if (!date || !customer  || !product || !items || !status || !category || !storeName) {
+  if (!date  || !product || !items || !status || !category || !storeName) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
@@ -37,7 +37,6 @@ const addOrder = async function (req, res) {
     // Create the new order with a single product and quantity
     const order = await Order.create({
       date,
-      customer,
       product,
       items, 
       status,
@@ -78,16 +77,16 @@ const addOrder = async function (req, res) {
 const updateOrder = async function (req, res) {
   try {
     const { id } = req.params;
-    const { date, customer, product, items, status, category, storeName } = req.body;
+    const { date, product, items, status, category, storeName } = req.body;
 
     // Validate required fields
-    if (!date || !customer  || !product || !items || !status) {
+    if (!date   || !product || !items || !status) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     const updatedOrder = await Order.findByIdAndUpdate(
       id,
-      { date, customer, product, items, status, category, storeName },
+      { date, product, items, status, category, storeName },
       { new: true }
     );
 
