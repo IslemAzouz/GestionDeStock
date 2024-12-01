@@ -1,4 +1,6 @@
 const Sale = require('../model/Sale');
+const Stock = require('../model/StockModel'); // Import the Stock model
+
 
 // Fetch all sales
 const getSales = (req, res) => {
@@ -22,26 +24,49 @@ const getSale = async (req, res) => {
 };
 
 // Add a new sale
-const addSale = (req, res) => {
-  const {  customer, product, quantity , price } = req.body;
+const addSale = async (req, res) => {
+  const { customer, product, quantity, price, category, storeName } = req.body;
 
-  if (!customer || !product || !quantity ) {
+  if (!customer || !product || !quantity) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   const totalAmount = price * quantity;
   const saleDate = req.body.date || new Date();
 
-  Sale.create({
-    date : saleDate ,
-    customer,
-    product,
-    quantity,
-    totalAmount,
-  })
-    .then((result) => res.status(201).send(result))
-    .catch((err) => res.status(500).send({ message: 'Failed to add sale', error: err.message }));
+  try {
+    // Create the new sale
+    const sale = await Sale.create({
+      date: saleDate,
+      customer,
+      product,
+      quantity,
+      totalAmount,
+      category,  
+      storeName, 
+    });
+
+    // Update the stock after sale
+    const productInStock = await Stock.findOne({ product });
+
+    if (productInStock) {
+      if (productInStock.quantity >= quantity) {
+        // Decrease the stock quantity
+        productInStock.quantity -= quantity;
+        await productInStock.save();
+      } else {
+        return res.status(400).json({ message: 'Not enough stock available' });
+      }
+    } else {
+      return res.status(404).json({ message: 'Product not found in stock' });
+    }
+
+    res.status(201).send(sale);
+  } catch (err) {
+    res.status(500).send({ message: 'Failed to add sale', error: err.message });
+  }
 };
+
 
 // Update a sale
 const updateSale = (req, res) => {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 import login from "../assets/Login page.png";
 import axios from "axios";
 
@@ -7,6 +7,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,18 +18,21 @@ const Login = () => {
         email,
         password,
       });
-    
-      if (response.status === 200 && response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        window.location.href = "/dashboard";
+      const role = response.data.role
+      console.log("dfsf : ",role)
+  
+      if (role) {
+        localStorage.setItem("token", response.data.token); // Save token to local storage
+        navigate("/dashboard", { state: { role } }); // Pass role to the next page
       } else {
         throw new Error("Token not provided in the response");
       }
     } catch (error) {
-      console.error("Login Error:", error.response?.data || error.message); // Debug error details
+      console.error("Login Error:", error.response?.data || error.message);
       setError("Invalid credentials. Please try again.");
     }
   };
+  
   
 
   return (

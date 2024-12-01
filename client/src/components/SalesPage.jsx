@@ -144,7 +144,7 @@ const SalesPage = () => {
       <div className="flex-1 flex flex-col bg-gray-50">
         <ToastContainer />
         <div className="flex items-center justify-between p-6 bg-white shadow">
-          <h1 className="text-xl font-semibold">Sales</h1>
+      
           
           <button
             onClick={() => openModal()}
