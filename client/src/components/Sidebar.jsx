@@ -26,7 +26,7 @@ const Sidebar = () => {
     { name: 'In Stock', path: '/Stock', icon: <CiDeliveryTruck className="w-6 h-6" /> },
     { name: 'Sales', path: '/sales', icon: <FaCoins className="w-6 h-6" /> },
     { name: 'Orders', path: '/orders', icon: <MdOutlineReceiptLong className="w-6 h-6" /> },
-    { name: 'Users', path: '#', icon: <FaUsers className="w-6 h-6" /> },
+    { name: 'Users', path: '/users', icon: <FaUsers className="w-6 h-6" /> },
   ];
 
   const handleLogout = () => {

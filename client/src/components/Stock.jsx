@@ -44,10 +44,7 @@ const Stock = () => {
   const handleSave = async () => {
     try {
       if (editMode) {
-        await axios.put(
-          `http://localhost:4000/stock/update/${modalData._id}`,
-          modalData
-        );
+        await axios.put(`http://localhost:4000/stock/update/${modalData._id}`,modalData);
       } else {
         await axios.post("http://localhost:4000/stock/add", modalData);
       }
@@ -72,7 +69,7 @@ const Stock = () => {
 
   const closeModal = () => setShowModal(false);
 
-  // Filter stocks based on the search query
+  
   const filteredStocks = stocks.filter(
     (stock) =>
       stock.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -150,7 +147,7 @@ const Stock = () => {
                   Export to Excel
               </button>
               <button
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
                 onClick={() => openModal()}
               >
                 + New Stock

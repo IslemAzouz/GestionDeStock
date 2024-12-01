@@ -16,12 +16,9 @@ const Login = () => {
         email,
         password,
       });
-  
-      console.log("Login Response:", response.data); // Debug: log the entire response
-  
+    
       if (response.status === 200 && response.data.token) {
         localStorage.setItem("token", response.data.token);
-        console.log("Token saved:", response.data.token); // Debug: confirm the token is saved
         window.location.href = "/dashboard";
       } else {
         throw new Error("Token not provided in the response");

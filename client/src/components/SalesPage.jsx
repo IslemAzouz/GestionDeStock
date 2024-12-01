@@ -144,10 +144,15 @@ const SalesPage = () => {
           
           <button
             onClick={() => openModal()}
-            className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700 flex items-center"
+            className="px-4 py-2 text-white bg-purple-600 rounded hover:bg-purple-700 flex items-center"
           >
             <Plus className="mr-2" /> Add Sale
           </button>
+          <button 
+                onClick={handleExportToExcel}
+                className="px-4 py-2 border rounded-lg text-purple-600 border-purple-600 hover:bg-purple-50">
+                  Export to Excel
+              </button>
         </div>
 
         <div className="flex gap-4 p-6 bg-white">
