@@ -15,7 +15,7 @@ const OrdersPage = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newOrder, setNewOrder] = useState({
     date: '',
-    customer: '',
+   
     storeName: '',
     product: '',
     category : '',
@@ -53,7 +53,7 @@ const OrdersPage = () => {
       
       if (searchTerm) {
         data = data.filter(order => 
-          order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.product.toLowerCase().includes(searchTerm.toLowerCase()) ||
           order.date.includes(searchTerm)
         );
       }
@@ -75,7 +75,7 @@ const OrdersPage = () => {
 
   const handleAddOrder = async (e) => {
     e.preventDefault();
-    if (!newOrder.date || !newOrder.customer || !newOrder.storeName ||  !newOrder.category || !newOrder.product || newOrder.items <= 0 || !newOrder.status) {
+    if (!newOrder.date || !newOrder.storeName ||  !newOrder.category || !newOrder.product || newOrder.items <= 0 || !newOrder.status) {
       toast.error('Please fill in all fields correctly');
       return;
     }
@@ -92,7 +92,7 @@ const OrdersPage = () => {
 
   const handleUpdateOrder = async (e) => {
     e.preventDefault();
-    if (!newOrder.date || !newOrder.customer || !newOrder.storeName ||  !newOrder.category  || !newOrder.product || newOrder.items <= 0 || !newOrder.status) {
+    if (!newOrder.date || !newOrder.storeName ||  !newOrder.category  || !newOrder.product || newOrder.items <= 0 || !newOrder.status) {
       toast.error('Please fill in all fields correctly');
       return;
     }
@@ -123,7 +123,6 @@ const OrdersPage = () => {
     try {
       const exportData = filteredData.map(order => ({
         Date: order.date,
-        Customer: order.customer,
         'Sales Channel': order.salesChannel,
         Destination: order.destination,
         Items: order.items,
@@ -195,7 +194,6 @@ const OrdersPage = () => {
                 onClick={() => {
                   setNewOrder({
                     date: '',
-                    customer: '',
                     salesChannel: '',
                     destination: '',
                     items: 0,
@@ -217,7 +215,7 @@ const OrdersPage = () => {
                 <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search order ID or Customer"
+                  placeholder="Search order ID or product"
                   className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -251,7 +249,7 @@ const OrdersPage = () => {
                       <input type="checkbox" className="rounded" />
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Date</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Customer</th>
+                    
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Sales Channel</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">product</th>
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Items</th>
@@ -275,7 +273,7 @@ const OrdersPage = () => {
                           <input type="checkbox" className="rounded" />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.date}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer}</td>
+                       
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.salesChannel}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.product}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.items}</td>
@@ -345,11 +343,11 @@ const OrdersPage = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-1">Customer</label>
+            <label className="block mb-1">product</label>
             <input
               type="text"
-              name="customer"
-              value={newOrder.customer}
+              name="product"
+              value={newOrder.product}
               onChange={handleInputChange}
               className="border rounded p-2 w-full"
               required
