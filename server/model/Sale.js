@@ -17,16 +17,15 @@ const saleSchema = new mongoose.Schema({
     type: Number, 
     required: true 
   },
+  price: { 
+    type: Number, 
+    required: true 
+  },
   totalAmount: { 
     type: Number, 
     required: true 
   },
-  category: { 
-    type: String 
-  }, 
-  storeName: { 
-    type: String 
-  }
+  
 });
 
 const Sale = mongoose.model('Sale', saleSchema, 'sales');
