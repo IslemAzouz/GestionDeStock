@@ -13,10 +13,6 @@ const orderSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  destination: { 
-    type: String, 
-    required: true 
-  },
   items: { 
     type: Number, 
     required: true 
@@ -24,6 +20,12 @@ const orderSchema = new mongoose.Schema({
   status: { 
     type: String,
     required: true 
+  },
+  category: { 
+    type: String 
+  },
+  storeName: { 
+    type: String 
   }
 });
 
