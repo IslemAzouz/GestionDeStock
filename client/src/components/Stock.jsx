@@ -9,12 +9,13 @@ import { saveAs } from 'file-saver';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
-const Stock = () => {
+
+const OrdersPage = () => {
   const navigate = useNavigate();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newOrder, setNewOrder] = useState({
     date: '',
-   
+    customer: '',
     storeName: '',
     product: '',
     category : '',
@@ -52,7 +53,7 @@ const Stock = () => {
       
       if (searchTerm) {
         data = data.filter(order => 
-          order.product.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
           order.date.includes(searchTerm)
         );
       }
@@ -103,6 +104,7 @@ const Stock = () => {
     try {
       const exportData = filteredData.map(order => ({
         Date: order.date,
+        Customer: order.customer,
         'Sales Channel': order.salesChannel,
         Destination: order.destination,
         Items: order.items,
@@ -153,7 +155,8 @@ const Stock = () => {
 
       <div className="flex-1 p-6">
           {/* Header */}
-          <Header title="Stock" user="user" /> {/* Pass props to Header */}
+          <Header title="Orders" user="user" /> {/* Pass props to Header */}
+
 
         <div className="p-6">
           {/* Page title and buttons */}
@@ -177,7 +180,7 @@ const Stock = () => {
                 <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search order ID or product"
+                  placeholder="Search order ID or Customer"
                   className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -202,75 +205,83 @@ const Stock = () => {
           </div>
 
           {/* Order table */}
-          <div className="bg-white rounded-lg border">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="w-8 p-4">
-                      <input type="checkbox" className="rounded" />
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Date</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Sales Channel</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">product</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Items</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Status</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {loading ? (
-                    <tr>
-                      <td colSpan="8" className="text-center py-4">Loading...</td>
-                    </tr>
-                  ) : error ? (
-                    <tr>
-                      <td colSpan="8" className="text-center py-4 text-red-500">{error}</td>
-                    </tr>
-                  ) : (
-                    filteredData.map((order, index) => (
-                      <tr key={order._id} className="hover:bg-gray-50">
-                        <td className="w-8 p-4">
-                          <input type="checkbox" className="rounded" />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.date}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.salesChannel}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.product}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.items}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              order.status === 'Completed'
-                                ? 'bg-green-100 text-green-600'
-                                : order.status === 'Pending'
-                                ? 'bg-yellow-100 text-yellow-600'
-                                : 'bg-red-100 text-red-600'
-                            }`}
-                          >
-                            {order.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                          <button onClick={() => {
-                            setNewOrder(order);
-                            setEditOrder(order._id);
-                            setIsPopupOpen(true);
-                          }}>
-                            <Pencil className="w-5 h-5 text-gray-500 hover:text-black-700" />
-                          </button>
-                          <button onClick={() => handleDeleteOrder(order._id)} className="ml-4">
-                            <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+<div className="bg-white rounded-lg border">
+  <div className="overflow-x-auto">
+    <table className="w-full">
+      <thead className="bg-gray-50 border-b">
+        <tr>
+          <th className="w-8 p-4">
+            <input type="checkbox" className="rounded" />
+          </th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Date</th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Customer</th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Sales Channel</th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Product</th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Items</th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Status</th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Action</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y">
+        {loading ? (
+          <tr>
+            <td colSpan="8" className="text-center py-4">Loading...</td>
+          </tr>
+        ) : error ? (
+          <tr>
+            <td colSpan="8" className="text-center py-4 text-red-500">{error}</td>
+          </tr>
+        ) : (
+          filteredData.map((order, index) => (
+            <tr key={order._id} className="hover:bg-gray-50">
+              <td className="w-8 p-4">
+                <input type="checkbox" className="rounded" />
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.date}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.salesChannel}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.product}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <span className={Number(order.items) < 3 ? 'text-red-500' : ''}>
+                  {order.items}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    order.status === 'Completed'
+                      ? 'bg-green-100 text-green-600'
+                      : order.status === 'Pending'
+                      ? 'bg-yellow-100 text-yellow-600'
+                      : 'bg-red-100 text-red-600'
+                  }`}
+                >
+                  {order.status}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                <button onClick={() => {
+                  setNewOrder(order);
+                  setEditOrder(order._id);
+                  setIsPopupOpen(true);
+                }}>
+                  <Pencil className="w-5 h-5 text-gray-500 hover:text-black-700" />
+                </button>
+                <button onClick={() => handleDeleteOrder(order._id)} className="ml-4">
+                  <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700" />
+                </button>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+</div>
+
+
 
       <ToastContainer 
         position="bottom-right" 
@@ -293,11 +304,11 @@ const Stock = () => {
         <form onSubmit={editOrder ? handleUpdateOrder : handleUpdateOrder}>
          
           <div className="mb-4">
-            <label className="block mb-1">product</label>
+            <label className="block mb-1">Customer</label>
             <input
               type="text"
-              name="product"
-              value={newOrder.product}
+              name="customer"
+              value={newOrder.customer}
               onChange={handleInputChange}
               className="border rounded p-2 w-full"
               required
@@ -338,17 +349,18 @@ const Stock = () => {
           </div>
          
           <div className="mb-4">
-            <label className="block mb-1">Items</label>
-            <input
-              type="number"
-              name="items"
-              value={newOrder.items}
-              onChange={handleInputChange}
-              className="border rounded p-2 w-full"
-              required
-              min="1"
-            />
-          </div>
+  <label className="block mb-1">Items</label>
+  <input
+    type="number"
+    name="items"
+    value={newOrder.items}
+    onChange={handleInputChange}
+    className={`border rounded p-2 w-full ${Number(newOrder.items) < 3 ? 'text-red-500' : ''}`}
+    required
+    min="1"
+  />
+</div>
+
          
           <div className="flex justify-end">
             <button
@@ -375,4 +387,4 @@ const Stock = () => {
   );
 };
 
-export default Stock;
+export default OrdersPage;
