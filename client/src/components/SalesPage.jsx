@@ -8,7 +8,11 @@ import { saveAs } from 'file-saver';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
+import {  useLocation } from 'react-router-dom';
+
+
 const SalesPage = () => {
+  
   const [salesData, setSalesData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,9 +26,13 @@ const SalesPage = () => {
     price: '',
     totalAmount: '',
   });
+  const role = localStorage.getItem("role");
+  console.log("Role: ", role);
+
+
 
   const [editMode, setEditMode] = useState(false);
-
+  
   useEffect(() => {
     fetchSales();
   }, []);
@@ -137,7 +145,7 @@ const SalesPage = () => {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
+      
       <div className="flex-1 p-6">
           {/* Header */}
           <Header title="Sales" user="user" /> {/* Pass props to Header */}

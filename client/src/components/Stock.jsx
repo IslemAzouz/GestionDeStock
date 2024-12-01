@@ -8,7 +8,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Sidebar from './Sidebar';
 import Header from './Header';
-
+import {  useLocation } from 'react-router-dom';
 
 const OrdersPage = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const OrdersPage = () => {
     items: 0,
     status: ''
   });
-  
+
   const [orderData, setOrderData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +30,9 @@ const OrdersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [editOrder, setEditOrder] = useState(null);
+  
+  const role = localStorage.getItem("role");
+  console.log("Role: ", role);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -151,11 +154,11 @@ const OrdersPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar Component */}
-      <Sidebar />
+      
 
       <div className="flex-1 p-6">
           {/* Header */}
-          <Header title="Orders" user="user" /> {/* Pass props to Header */}
+          <Header title="stock" user="user" /> {/* Pass props to Header */}
 
 
         <div className="p-6">

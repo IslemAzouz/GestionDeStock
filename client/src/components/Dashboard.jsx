@@ -41,8 +41,8 @@ const Dashboard = () => {
   const [totalSales, setTotalSales] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
 
-  const role = location.state?.role; // Get role from location state
-  console.log("AdminDashboard role:", role); // Debugging line
+  const role = localStorage.getItem('role'); // Get role from localStorage
+  console.log("role:", role); // Debugging line
 
 
 
@@ -67,7 +67,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-100">
       <div className="flex">
         {/* Sidebar */}
-        <Sidebar role={role} />
+        
 
         {/* Main Content */}
         <div className="flex-1 p-6">

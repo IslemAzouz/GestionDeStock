@@ -12,7 +12,8 @@ const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const role = localStorage.getItem("role");
+  console.log("Role: ", role);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -55,7 +56,7 @@ const UsersPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar /> 
+      
       <div className="flex-1 p-6 "> 
       <div className="flex-1 p-6">
           {/* Header */}
