@@ -7,8 +7,13 @@ import Sidebar from "./Sidebar";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver'; // Ensure saveAs is imported for file saving
 import Header from "./Header";
+import {  useLocation } from 'react-router-dom';
+
 
 const Stock = () => {
+  const location = useLocation();
+  const role = location.state?.role; // Get role from location state
+  console.log("AdminDashboard role:", role); // Debugging line
   const [stocks, setStocks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -105,7 +110,7 @@ const Stock = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar Component */}
-      <Sidebar />
+      <Sidebar  />
       <div className="min-h-screen bg-gray-50 flex-1">
         <div className="flex-1">
           {/* Header */}

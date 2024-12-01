@@ -1,5 +1,5 @@
-
 const Order = require('../model/Order');
+const Stock = require('../model/StockModel');
 
 const getOrders = function (req, res) {
   Order.find({})
@@ -24,31 +24,53 @@ const getOrder = async (req, res) => {
   }
 };
 
-const addOrder = function (req, res) {
+const addOrder = async function (req, res) {
   console.log(req.body); // Log the incoming request body for debugging
 
-  const { date, customer, salesChannel, destination, items, status } = req.body;
+  const { date, customer, product, destination, items, status } = req.body;
 
-  if (!date || !customer || !salesChannel || !destination || !items || !status) {
+  if (!date || !customer || !destination || !product || !items || !status) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  Order.insertMany({
-    date,
-    customer,
-    salesChannel,
-    destination,
-    items,
-    status,
-  })
-    .then((result) => {
-      res.status(200).send(result);
-    })
-    .catch((err) => {
-      console.error('Error inserting order:', err);
-      res.status(500).send({ message: 'Failed to add order', error: err.message });
+  try {
+    // Create the new order with a single product and quantity
+    const order = await Order.create({
+      date,
+      customer,
+      product,
+      destination,
+      items, 
+      status,
     });
+
+    // Check if the order status is "completed"
+    if (status === "completed") {
+      // Find the product in stock and update quantity
+      const productInStock = await Stock.findOne({ product });
+
+      if (productInStock) {
+        // Add the quantity to the existing stock
+        productInStock.quantity += items; // 'items' is the quantity now
+        await productInStock.save();
+      } else {
+        // If the product doesn't exist in stock, add it as a new entry
+        await Stock.create({
+          product,
+          category: req.body.category,  // Assuming category is passed in the request body
+          storeName: req.body.storeName,  // Assuming storeName is passed in the request body
+          quantity: items,  // 'items' is the quantity now
+        });
+      }
+    }
+
+    res.status(200).send(order);
+  } catch (err) {
+    console.error('Error inserting order:', err);
+    res.status(500).send({ message: 'Failed to add order', error: err.message });
+  }
 };
+
 
 
 const updateOrder = function (req, res) {

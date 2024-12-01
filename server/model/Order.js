@@ -9,7 +9,7 @@ const orderSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  salesChannel: { 
+  product: { 
     type: String, 
     required: true 
   },
