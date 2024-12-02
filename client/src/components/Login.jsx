@@ -11,26 +11,31 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+    
     try {
       const response = await axios.post("http://localhost:4000/auth/login", {
         email,
         password,
       });
-      const role = response.data.role
-      console.log("dfsf : ",role)
+  
+      const role = response.data.role; // Assuming role is part of the response
   
       if (role) {
+        // Save role and token to localStorage
+        localStorage.setItem("role", role); // Save role to local storage
         localStorage.setItem("token", response.data.token); // Save token to local storage
-        navigate("/dashboard", { state: { role } }); // Pass role to the next page
+  
+        // Navigate to the dashboard, passing the role in the state
+        navigate("/dashboard", { state: { role } });
       } else {
-        throw new Error("Token not provided in the response");
+        throw new Error("Role not provided in the response");
       }
     } catch (error) {
       console.error("Login Error:", error.response?.data || error.message);
       setError("Invalid credentials. Please try again.");
     }
   };
+  
   
   
 
