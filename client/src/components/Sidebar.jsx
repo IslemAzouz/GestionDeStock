@@ -32,10 +32,10 @@ const Sidebar = ({ role }) => {
       return true;
     }
     if (role === "commande manager") {
-      return item.name === "Orders" || item.name === "In Stock";
+      return item.name === "Orders" || item.name === "In Stock" || item.name === "Dashboard";
     }
     if (role === "stock manager") {
-      return item.name === "In Stock" || item.name === "Sales";
+      return item.name === "In Stock" || item.name === "Sales" || item.name === "Dashboard";
     }
     return false;
   });
