@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, LogOut } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom';
 import { RxDashboard } from "react-icons/rx";
 import { CiDeliveryTruck } from "react-icons/ci";
 import { FaCoins, FaUsers } from "react-icons/fa";
@@ -29,7 +29,7 @@ const Sidebar = ({ role }) => {
 
   const filteredMenuItems = menuItems.filter(item => {
     if (role === "admin") {
-      return true; 
+      return true;
     }
     if (role === "commande manager") {
       return item.name === "Orders" || item.name === "In Stock";
@@ -37,7 +37,7 @@ const Sidebar = ({ role }) => {
     if (role === "stock manager") {
       return item.name === "In Stock" || item.name === "Sales";
     }
-    return false; 
+    return false;
   });
 
   const handleLogout = () => {
@@ -48,31 +48,38 @@ const Sidebar = ({ role }) => {
   };
 
   return (
-    <div className="w-20 min-h-screen bg-purple-600 text-white">
-      <div className="p-4">
-        <Menu className="w-6 h-6" />
+    <div className="w-20 min-h-screen bg-purple-600 text-white flex flex-col justify-between">
+      {/* Top Section */}
+      <div>
+        <div className="p-4 flex justify-center">
+          <Menu className="w-6 h-6" />
+        </div>
+        <nav className="flex flex-col gap-4 p-2 items-center">
+          {filteredMenuItems.map(item => (
+            <Link key={item.name} to={item.path}>
+              <button className="flex flex-col items-center justify-center p-2 rounded hover:bg-white hover:text-purple-600 text-xs">
+                <div className="w-6 h-6 mb-2">
+                  {item.icon}
+                </div>
+                {item.name}
+              </button>
+            </Link>
+          ))}
+        </nav>
       </div>
-      <nav className="flex flex-col gap-4 p-2">
-        {filteredMenuItems.map(item => (
-          <Link key={item.name} to={item.path}>
-            <button className="flex flex-col items-center justify-center p-2 rounded hover:bg-white hover:text-purple-600 text-xs">
-              <div className="w-6 h-6 mb-2">
-                {item.icon}
-              </div>
-              {item.name}
-            </button>
-          </Link>
-        ))}
+
+      {/* Logout Button */}
+      <div className="p-2">
         <button
           onClick={handleLogout}
           className="flex flex-col items-center justify-center p-2 rounded hover:bg-white hover:text-purple-600 text-xs"
         >
-          <div className="w-6 h-6 ">
+          <div className="w-6 h-6 mb-2">
             <LogOut className="w-6 h-6" />
           </div>
           Logout
         </button>
-      </nav>
+      </div>
     </div>
   );
 };

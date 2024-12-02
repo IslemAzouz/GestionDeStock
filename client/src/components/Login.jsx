@@ -47,10 +47,6 @@ const Login = () => {
         <p className="text-gray-600 mb-6">See your growth and get support!</p>
         
    
-        <button className="flex items-center justify-center w-full lg:w-3/4 border border-gray-300 rounded-md py-2 mb-6 hover:bg-gray-100">
-          <img src="https://img.icons8.com/color/24/google-logo.png" alt="Google Logo" className="mr-2" />
-          Sign in with Google
-        </button>
 
         <input
           type="email"
@@ -70,13 +66,7 @@ const Login = () => {
           required
         />
 
-        <div className="w-full lg:w-3/4 flex items-center justify-between mb-4">
-          <label className="flex items-center">
-            <input type="checkbox" className="mr-2" />
-            Remember me
-          </label>
-          <a href="#" className="text-blue-500 hover:underline">Forgot password?</a>
-        </div>
+        
 
         <button
           className="w-full lg:w-3/4 bg-blue-900 text-white py-3 rounded-md hover:bg-blue-800 mb-4"

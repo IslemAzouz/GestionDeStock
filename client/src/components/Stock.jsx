@@ -8,14 +8,13 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import {  useLocation } from 'react-router-dom';
 
-const OrdersPage = () => {
+
+const Stock = () => {
   const navigate = useNavigate();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newOrder, setNewOrder] = useState({
     date: '',
-    customer: '',
     storeName: '',
     product: '',
     category : '',
@@ -107,8 +106,7 @@ const OrdersPage = () => {
     try {
       const exportData = filteredData.map(order => ({
         Date: order.date,
-        Customer: order.customer,
-        'Sales Channel': order.salesChannel,
+        'Sales Channel': order.storeName,
         Destination: order.destination,
         Items: order.items,
         Status: order.status
@@ -158,7 +156,7 @@ const OrdersPage = () => {
 
       <div className="flex-1 p-6">
           {/* Header */}
-          <Header title="stock" user="user" /> {/* Pass props to Header */}
+          <Header title="Stock" user="user" /> {/* Pass props to Header */}
 
 
         <div className="p-6">
@@ -183,7 +181,7 @@ const OrdersPage = () => {
                 <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search order ID or Customer"
+                  placeholder="Search order ID or product"
                   className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -217,8 +215,8 @@ const OrdersPage = () => {
             <input type="checkbox" className="rounded" />
           </th>
           <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Date</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Customer</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Sales Channel</th>
+          
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Store Name</th>
           <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Product</th>
           <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Items</th>
           <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Status</th>
@@ -241,8 +239,8 @@ const OrdersPage = () => {
                 <input type="checkbox" className="rounded" />
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.date}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.salesChannel}</td>
+              
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.storeName}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.product}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm">
                 <span className={Number(order.items) < 3 ? 'text-red-500' : ''}>
@@ -306,17 +304,7 @@ const OrdersPage = () => {
       <div className="overflow-y-auto max-h-[60vh]"> {/* Add this to make the form scrollable */}
         <form onSubmit={editOrder ? handleUpdateOrder : handleUpdateOrder}>
          
-          <div className="mb-4">
-            <label className="block mb-1">Customer</label>
-            <input
-              type="text"
-              name="customer"
-              value={newOrder.customer}
-              onChange={handleInputChange}
-              className="border rounded p-2 w-full"
-              required
-            />
-          </div>
+           
           <div className="mb-4">
             <label className="block mb-1">Category</label>
             <input
@@ -390,4 +378,4 @@ const OrdersPage = () => {
   );
 };
 
-export default OrdersPage;
+export default Stock;
