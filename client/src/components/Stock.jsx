@@ -156,7 +156,9 @@ const Stock = () => {
 
       <div className="flex-1 p-6">
           {/* Header */}
+
           <Header title="Stock" user="user" /> {/* Pass props to Header */}
+
 
 
         <div className="p-6">
