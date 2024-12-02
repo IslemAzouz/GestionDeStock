@@ -8,7 +8,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import {  useLocation } from 'react-router-dom';
+
 
 const Stock = () => {
   const navigate = useNavigate();
