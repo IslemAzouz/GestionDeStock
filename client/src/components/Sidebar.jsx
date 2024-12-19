@@ -5,6 +5,7 @@ import { RxDashboard } from "react-icons/rx";
 import { CiDeliveryTruck } from "react-icons/ci";
 import { FaCoins, FaUsers } from "react-icons/fa";
 import { MdOutlineReceiptLong } from "react-icons/md";
+import { AiOutlineAlert } from "react-icons/ai";
 
 const Sidebar = ({ role }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -25,6 +26,7 @@ const Sidebar = ({ role }) => {
     { name: 'Sales', path: '/sales', icon: <FaCoins className="w-6 h-6" /> },
     { name: 'Orders', path: '/orders', icon: <MdOutlineReceiptLong className="w-6 h-6" /> },
     { name: 'Users', path: '/users', icon: <FaUsers className="w-6 h-6" /> },
+    { name: 'Alert', path: '/Alert', icon: <AiOutlineAlert className="w-6 h-6" /> },
   ];
 
   const filteredMenuItems = menuItems.filter(item => {
@@ -35,7 +37,7 @@ const Sidebar = ({ role }) => {
       return item.name === "Orders" || item.name === "In Stock" || item.name === "Dashboard";
     }
     if (role === "stock manager") {
-      return item.name === "In Stock" || item.name === "Sales" || item.name === "Dashboard";
+      return item.name === "In Stock" || item.name === "Sales" || item.name === "Dashboard" || item.name === "Alert";
     }
     return false;
   });

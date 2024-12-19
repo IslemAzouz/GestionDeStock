@@ -75,8 +75,17 @@ module.exports.login = async (req, res) => {
     // Set the JWT token as a cookie
     res.cookie("jwt", token, { httpOnly: false, maxAge: maxAge * 1000 });
 
-    // Include the token and role in the response JSON
-    res.status(200).json({ user: user._id, role: user.role, token, status: true });
+    res.status(200).json({ 
+      id: user._id, 
+      role: user.role, 
+      token, 
+      firstName: user.firstName, 
+      lastName: user.lastName, 
+      status: true 
+    });
+    
+    console.log("Login Response:", { id: user._id, role: user.role, token, status: true });
+    
   } catch (err) {
     const errors = handleErrors(err);
     res.json({ errors, status: false });
