@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import {  useLocation } from 'react-router-dom';
 
-import Sidebar from './Sidebar';
-import Header from './Header'; // Import the Header component
+import Header from './Header'; 
 import axios from 'axios';
 
 const chartData = [
@@ -37,12 +36,14 @@ const MetricCard = ({ title, amount }) => (
 const Dashboard = () => {
   const location = useLocation();
 
+  // Retrieve role and userId from localStorage
+  const role = localStorage.getItem('role');
+  const userId = localStorage.getItem('userId'); // Retrieve user ID
+  console.log("role:", role, "userId:", userId); // Debugging line
+
   const [totalStock, setTotalStock] = useState(0);
   const [totalSales, setTotalSales] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
-
-  const role = localStorage.getItem('role'); // Get role from localStorage
-  console.log("role:", role); // Debugging line
 
 
 

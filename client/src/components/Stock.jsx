@@ -21,7 +21,7 @@ const Stock = () => {
     items: 0,
     status: ''
   });
-
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [orderData, setOrderData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -148,65 +148,92 @@ const Stock = () => {
       toast.error('Failed to export orders');
     }
   };
+  const highStockProducts = filteredData.filter((order) => Number(order.items) < 3);
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar Component */}
-      
-
+  
       <div className="flex-1 p-6">
-          {/* Header */}
-
-          <Header title="Stock" user="user" /> {/* Pass props to Header */}
-
-
-
+        {/* Header */}
+        <Header title="" user="user" />
+  
         <div className="p-6">
           {/* Page title and buttons */}
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-semibold text-gray-50">............................</h1>
+            <h1 className="text-2xl font-semibold text-gray-700">Stock Management</h1>
             <div className="flex gap-3">
-              <button 
-              onClick={handleExportToExcel}
-              className="px-4 py-2 border rounded-lg text-purple-600 border-purple-600 hover:bg-purple-50">
-                Export to excel
+              <button
+                onClick={handleExportToExcel}
+                className="px-4 py-2 border rounded-lg text-purple-600 border-purple-600 hover:bg-purple-50"
+              >
+                Export to Excel
               </button>
-             
-              
+              {/* Notification Icon */}
+              <div className="relative">
+  <button
+    onClick={() => setIsNotifOpen(!isNotifOpen)}
+    className="relative focus:outline-none"
+  >
+    <Bell className="w-6 h-6 text-gray-700 hover:text-black" />
+    {highStockProducts.length > 0 && (
+      <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
+        {highStockProducts.length}
+      </span>
+    )}
+  </button>
+
+  {/* Notification Dropdown */}
+  {isNotifOpen && (
+    <div className="absolute right-0 top-auto mt-20 w-64 bg-white shadow-lg rounded-lg p-5">
+    <h3 className="text-sm font-bold text-gray-700 mb-2">Products in Stock</h3>
+      {highStockProducts.length > 0 ? (
+        <ul className="divide-y divide-gray-200">
+          {highStockProducts.map((product) => (
+            <li key={product._id} className="py-2 text-sm text-gray-600">
+              {product.product} - {product.items} items
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-sm text-gray-500">No products in stock.</p>
+      )}
+    </div>
+  )}
+</div>
             </div>
           </div>
-
-          {/* Search and Filters */}
-          <div className="mb-6">
-            <div className="flex gap-4 items-center">
-              <div className="flex-1 relative">
-                <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search order ID or product"
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+  
+          {/* Search, Filter, and Calendar */}
+          <div className="flex flex-wrap gap-4 items-center mb-6">
+            <div className="flex-1 relative">
+              <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search order ID or product"
+                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-4">
               <button className="p-2 border rounded-lg hover:bg-gray-50">
                 <Calendar className="w-5 h-5 text-gray-600" />
               </button>
-              <div className="relative">
-                <select
-                  className="px-4 py-2 border rounded-lg text-gray-600 focus:outline-none"
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                >
-                                    <option value="All">All Status</option>
-                  <option value="Completed">Completed</option>
-                  <option value="Pending">Pending</option>
-                  <option value="Cancelled">Cancelled</option>
-                </select>
-              </div>
+              <select
+                className="px-4 py-2 border rounded-lg text-gray-600 focus:outline-none"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+              >
+                <option value="All">All Status</option>
+                <option value="Completed">Completed</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
             </div>
           </div>
-
+        
           {/* Order table */}
 <div className="bg-white rounded-lg border">
   <div className="overflow-x-auto">
